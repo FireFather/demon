@@ -12,14 +12,13 @@
 #include "see.h"
 
 //vars
-
 int promote = 4;
 bool white_has_castled = false;
 bool black_has_castled = false;
-bool WHITE_KR_has_moved = false;
-bool WHITE_QR_has_moved = false;
-bool BLACK_KR_has_moved = false;
-bool BLACK_QR_has_moved = false;
+bool White_KR_has_moved = false;
+bool White_QR_has_moved = false;
+bool Black_KR_has_moved = false;
+bool Black_QR_has_moved = false;
 unsigned int killer[2][MAX_DEPTH];
 
 int piece_num[15] =
@@ -34,8 +33,7 @@ int promote_values[5] =
 
 int piece_values[15] =
     {
-    0, rook_value, bishop_value, queen_value, knight_value, pawn_value, 5000, 0, 0, rook_value, bishop_value,
-        queen_value, knight_value, pawn_value, 5000
+    0, rook_value, bishop_value, queen_value, knight_value, pawn_value, 5000, 0, 0, rook_value, bishop_value, queen_value, knight_value, pawn_value, 5000
     };
 
 void make_move( unsigned int move, int ply )
@@ -53,7 +51,7 @@ void make_move( unsigned int move, int ply )
     board->key ^= hash_data[from][piece_num[piece]];
     board->key ^= hash_data[to][piece_num[piece]];
 
-    if( captured )
+    if (captured)
         board->key ^= hash_data[to][piece_num[captured]];
     board->square[from] = EMPTY;
     board->square[to] = piece;
@@ -68,7 +66,7 @@ void make_move( unsigned int move, int ply )
     board->key ^= ep_modifier[board->ep];
     board->ep = 0;
 
-    if( WHITE_PIECE(piece) )
+    if (WHITE_PIECE(piece))
         {
         board->white_pieces ^= temp;
         board->black_pieces &= not_mask[to];
@@ -85,20 +83,22 @@ void make_move( unsigned int move, int ply )
 
             case WHITE_ROOK:
                 board->white_rooks ^= temp;
-                if( from == H1 && (board->castle & 4) )
+
+                if (from == H1 && (board->castle & 4))
                     {
                     board->castle &= 11 + 48;
                     board->key ^= castle_modifier[2];
                     }
-                else if( from == A1 && (board->castle & 8) )
+                else if (from == A1 && (board->castle & 8))
                     {
                     board->castle &= 7 + 48;
                     board->key ^= castle_modifier[3];
                     }
-                if( from == H1 )
-                    WHITE_KR_has_moved = true;
-                if( from == A1 )
-                    WHITE_QR_has_moved = true;
+
+				if (from == H1)
+					White_KR_has_moved = true;
+				if (from == A1)
+					White_QR_has_moved = true;
                 break;
 
             case WHITE_QUEEN:
@@ -106,7 +106,7 @@ void make_move( unsigned int move, int ply )
                 break;
 
             case WHITE_PAWN:
-                if( to >= H8 )
+                if (to >= H8)
                     {
                     switch( promote )
                         {
@@ -142,10 +142,10 @@ void make_move( unsigned int move, int ply )
                     {
                     board->white_pawns ^= temp;
 
-                    if( (to - from) == 16 )
+                    if ((to - from) == 16)
                         {
-                        if( (FILE(to) > 0 && board->square[to - 1] == BLACK_PAWN)
-                            || (FILE(to) < 7 && board->square[to + 1] == BLACK_PAWN) )
+                        if ((FILE(to) > 0 && board->square[to - 1] == BLACK_PAWN)
+                            || (FILE(to) < 7 && board->square[to + 1] == BLACK_PAWN))
                             {
                             board->ep = from + 8;
                             board->key ^= ep_modifier[board->ep];
@@ -155,7 +155,7 @@ void make_move( unsigned int move, int ply )
                 break;
 
             case WHITE_KING:
-                if( special == 1 )
+                if (special == 1)
                     {
                     board->castle |= 32;
                     board->key ^= hash_data[H1][piece_num[WHITE_ROOK]];
@@ -171,9 +171,9 @@ void make_move( unsigned int move, int ply )
                     board->rotate_135 |= mask[rotate_135[F1]];
                     board->rotate_45 &= not_mask[rotate_45[H1]];
                     board->rotate_45 |= mask[rotate_45[F1]];
-                    white_has_castled = true;
+					white_has_castled = true;
                     }
-                else if( special == 2 )
+                else if (special == 2)
                     {
                     board->castle |= 32;
                     board->key ^= hash_data[A1][piece_num[WHITE_ROOK]];
@@ -189,14 +189,16 @@ void make_move( unsigned int move, int ply )
                     board->rotate_135 |= mask[rotate_135[D1]];
                     board->rotate_45 &= not_mask[rotate_45[A1]];
                     board->rotate_45 |= mask[rotate_45[D1]];
-                    white_has_castled = true;
+					white_has_castled = true;
                     }
                 board->white_king = to;
-                if( board->castle & 4 )
+
+                if (board->castle & 4)
                     {
                     board->key ^= castle_modifier[2];
                     }
-                if( board->castle & 8 )
+
+                if (board->castle & 8)
                     {
                     board->key ^= castle_modifier[3];
                     }
@@ -219,20 +221,22 @@ void make_move( unsigned int move, int ply )
             case BLACK_ROOK:
                 board->score -= rook_value;
                 board->black_rooks &= not_mask[to];
-                if( from == H8 && (board->castle & 1) )
+
+                if (from == H8 && (board->castle & 1))
                     {
                     board->castle &= 14 + 48;
                     board->key ^= castle_modifier[0];
                     }
-                else if( from == A8 && (board->castle & 2) )
+                else if (from == A8 && (board->castle & 2))
                     {
                     board->castle &= 13 + 48;
                     board->key ^= castle_modifier[1];
                     }
-                if( from == H8 )
-                    BLACK_KR_has_moved = true;
-                if( from == A8 )
-                    BLACK_QR_has_moved = true;
+
+				if (from == H8)
+					Black_KR_has_moved = true;
+				if (from == A8)
+					Black_QR_has_moved = true;
                 break;
 
             case BLACK_QUEEN:
@@ -241,7 +245,7 @@ void make_move( unsigned int move, int ply )
                 break;
 
             case BLACK_PAWN:
-                if( special == 4 )
+                if (special == 4)
                     {
                     int capSQ = to - 8;
                     board->key ^= hash_data[to][piece_num[captured]];
@@ -278,20 +282,22 @@ void make_move( unsigned int move, int ply )
 
             case BLACK_ROOK:
                 board->black_rooks ^= temp;
-                if( from == H8 && (board->castle & 1) )
+
+                if (from == H8 && (board->castle & 1))
                     {
                     board->castle &= 14 + 48;
                     board->key ^= castle_modifier[0];
                     }
-                else if( from == A8 && (board->castle & 2) )
+                else if (from == A8 && (board->castle & 2))
                     {
                     board->castle &= 13 + 48;
                     board->key ^= castle_modifier[1];
                     }
-                if( from == H8 )
-                    BLACK_KR_has_moved = true;
-                if( from == A8 )
-                    BLACK_QR_has_moved = true;
+
+				if (from == H8)
+					Black_KR_has_moved = true;
+				if (from == A8)
+					Black_QR_has_moved = true;
                 break;
 
             case BLACK_QUEEN:
@@ -299,7 +305,7 @@ void make_move( unsigned int move, int ply )
                 break;
 
             case BLACK_PAWN:
-                if( to <= A1 )
+                if (to <= A1)
                     {
                     switch( promote )
                         {
@@ -335,10 +341,11 @@ void make_move( unsigned int move, int ply )
                     {
                     board->black_pawns ^= temp;
                     }
-                if( (from - to) == 16 )
+
+                if ((from - to) == 16)
                     {
-                    if( (FILE(to) > 0 && board->square[to - 1] == WHITE_PAWN)
-                        || (FILE(to) < 7 && board->square[to + 1] == WHITE_PAWN) )
+                    if ((FILE(to) > 0 && board->square[to - 1] == WHITE_PAWN)
+                        || (FILE(to) < 7 && board->square[to + 1] == WHITE_PAWN))
                         {
                         board->ep = from - 8;
                         board->key ^= ep_modifier[board->ep];
@@ -347,7 +354,7 @@ void make_move( unsigned int move, int ply )
                 break;
 
             case BLACK_KING:
-                if( special == 1 )
+                if (special == 1)
                     {
                     board->castle |= 16;
                     board->key ^= hash_data[H8][piece_num[BLACK_ROOK]];
@@ -363,9 +370,9 @@ void make_move( unsigned int move, int ply )
                     board->rotate_135 |= mask[rotate_135[F8]];
                     board->rotate_45 &= not_mask[rotate_45[H8]];
                     board->rotate_45 |= mask[rotate_45[F8]];
-                    black_has_castled = true;
+					black_has_castled = true;
                     }
-                else if( special == 2 )
+                else if (special == 2)
                     {
                     board->castle |= 16;
                     board->key ^= hash_data[A8][piece_num[BLACK_ROOK]];
@@ -381,14 +388,16 @@ void make_move( unsigned int move, int ply )
                     board->rotate_135 |= mask[rotate_135[D8]];
                     board->rotate_45 &= not_mask[rotate_45[A8]];
                     board->rotate_45 |= mask[rotate_45[D8]];
-                    black_has_castled = true;
+					black_has_castled = true;
                     }
                 board->black_king = to;
-                if( board->castle & 1 )
+
+                if (board->castle & 1)
                     {
                     board->key ^= castle_modifier[0];
                     }
-                if( board->castle & 2 )
+
+                if (board->castle & 2)
                     {
                     board->key ^= castle_modifier[1];
                     }
@@ -411,20 +420,22 @@ void make_move( unsigned int move, int ply )
             case WHITE_ROOK:
                 board->score += rook_value;
                 board->white_rooks &= not_mask[to];
-                if( from == H1 && (board->castle & 4) )
+
+                if (from == H1 && (board->castle & 4))
                     {
                     board->castle &= 11 + 48;
                     board->key ^= castle_modifier[2];
                     }
-                else if( from == A1 && (board->castle & 8) )
+                else if (from == A1 && (board->castle & 8))
                     {
                     board->castle &= 7 + 48;
                     board->key ^= castle_modifier[3];
                     }
-                if( from == H1 )
-                    WHITE_KR_has_moved = true;
-                if( from == A1 )
-                    WHITE_QR_has_moved = true;
+
+				if (from == H1)
+					White_KR_has_moved = true;
+				if (from == A1)
+					White_QR_has_moved = true;
                 break;
 
             case WHITE_QUEEN:
@@ -433,7 +444,7 @@ void make_move( unsigned int move, int ply )
                 break;
 
             case WHITE_PAWN:
-                if( special == 4 )
+                if (special == 4)
                     {
                     int capSQ = to + 8;
                     board->key ^= hash_data[to][piece_num[captured]];
@@ -477,18 +488,18 @@ void un_make_move( unsigned int move, int ply )
     board->rotate_135 |= mask[rotate_135[from]];
     board->rotate_45 |= mask[rotate_45[from]];
 
-    if( !captured )
+    if (!captured)
         {
         board->rotate_90 &= not_mask[rotate_90[to]];
         board->rotate_135 &= not_mask[rotate_135[to]];
         board->rotate_45 &= not_mask[rotate_45[to]];
         }
 
-    if( WHITE_PIECE(piece) )
+    if (WHITE_PIECE(piece))
         {
         board->white_pieces ^= temp;
 
-        if( captured )
+        if (captured)
             board->black_pieces |= mask[to];
 
         switch( piece )
@@ -503,10 +514,10 @@ void un_make_move( unsigned int move, int ply )
 
             case WHITE_ROOK:
                 board->white_rooks ^= temp;
-                if( to == H1 )
-                    WHITE_KR_has_moved = false;
-                if( to == A1 )
-                    WHITE_QR_has_moved = false;
+				if (to == H1)
+					White_KR_has_moved = false;
+				if (to == A1)
+					White_QR_has_moved = false;
                 break;
 
             case WHITE_QUEEN:
@@ -514,7 +525,7 @@ void un_make_move( unsigned int move, int ply )
                 break;
 
             case WHITE_PAWN:
-                if( to >= H8 )
+                if (to >= H8)
                     {
                     switch( promote )
                         {
@@ -543,7 +554,7 @@ void un_make_move( unsigned int move, int ply )
                 break;
 
             case WHITE_KING:
-                if( special == 1 )
+                if (special == 1)
                     {
                     board->square[H1] = WHITE_ROOK;
                     board->square[F1] = EMPTY;
@@ -556,9 +567,9 @@ void un_make_move( unsigned int move, int ply )
                     board->rotate_135 &= not_mask[rotate_135[F1]];
                     board->rotate_45 |= mask[rotate_45[H1]];
                     board->rotate_45 &= not_mask[rotate_45[F1]];
-                    white_has_castled = false;
+					white_has_castled = false;
                     }
-                else if( special == 2 )
+                else if (special == 2)
                     {
                     board->square[A1] = WHITE_ROOK;
                     board->square[D1] = EMPTY;
@@ -571,7 +582,7 @@ void un_make_move( unsigned int move, int ply )
                     board->rotate_135 &= not_mask[rotate_135[D1]];
                     board->rotate_45 |= mask[rotate_45[A1]];
                     board->rotate_45 &= not_mask[rotate_45[D1]];
-                    white_has_castled = false;
+					white_has_castled = false;
                     }
                 board->white_king = from;
                 break;
@@ -589,10 +600,10 @@ void un_make_move( unsigned int move, int ply )
 
             case BLACK_ROOK:
                 board->black_rooks |= mask[to];
-                if( to == H8 )
-                    BLACK_KR_has_moved = false;
-                if( to == A8 )
-                    BLACK_QR_has_moved = false;
+				if (to == H8)
+					Black_KR_has_moved = false;
+				if (to == A8)
+					Black_QR_has_moved = false;
                 break;
 
             case BLACK_QUEEN:
@@ -600,7 +611,7 @@ void un_make_move( unsigned int move, int ply )
                 break;
 
             case BLACK_PAWN:
-                if( special == 4 )
+                if (special == 4)
                     {
                     int capSQ = to - 8;
                     board->rotate_90 &= not_mask[rotate_90[to]];
@@ -626,7 +637,7 @@ void un_make_move( unsigned int move, int ply )
         {
         board->black_pieces ^= temp;
 
-        if( captured )
+        if (captured)
             board->white_pieces |= mask[to];
 
         switch( piece )
@@ -641,10 +652,10 @@ void un_make_move( unsigned int move, int ply )
 
             case BLACK_ROOK:
                 board->black_rooks ^= temp;
-                if( to == H8 )
-                    BLACK_KR_has_moved = false;
-                if( to == A8 )
-                    BLACK_QR_has_moved = false;
+				if (to == H8)
+					Black_KR_has_moved = false;
+				if (to == A8)
+					Black_QR_has_moved = false;
                 break;
 
             case BLACK_QUEEN:
@@ -652,7 +663,7 @@ void un_make_move( unsigned int move, int ply )
                 break;
 
             case BLACK_PAWN:
-                if( to <= A1 )
+                if (to <= A1)
                     {
                     switch( promote )
                         {
@@ -681,7 +692,7 @@ void un_make_move( unsigned int move, int ply )
                 break;
 
             case BLACK_KING:
-                if( special == 1 )
+                if (special == 1)
                     {
                     board->square[H8] = BLACK_ROOK;
                     board->square[F8] = EMPTY;
@@ -694,9 +705,9 @@ void un_make_move( unsigned int move, int ply )
                     board->rotate_135 &= not_mask[rotate_135[F8]];
                     board->rotate_45 |= mask[rotate_45[H8]];
                     board->rotate_45 &= not_mask[rotate_45[F8]];
-                    black_has_castled = false;
+					black_has_castled = false;
                     }
-                else if( special == 2 )
+                else if (special == 2)
                     {
                     board->square[A8] = BLACK_ROOK;
                     board->square[D8] = EMPTY;
@@ -709,7 +720,7 @@ void un_make_move( unsigned int move, int ply )
                     board->rotate_135 &= not_mask[rotate_135[D8]];
                     board->rotate_45 |= mask[rotate_45[A8]];
                     board->rotate_45 &= not_mask[rotate_45[D8]];
-                    black_has_castled = false;
+					black_has_castled = false;
                     }
                 board->black_king = from;
                 break;
@@ -727,10 +738,10 @@ void un_make_move( unsigned int move, int ply )
 
             case WHITE_ROOK:
                 board->white_rooks |= mask[to];
-                if( to == H1 )
-                    WHITE_KR_has_moved = false;
-                if( to == A1 )
-                    WHITE_QR_has_moved = false;
+				if (to == H1)
+					White_KR_has_moved = false;
+				if (to == A1)
+					White_QR_has_moved = false;
                 break;
 
             case WHITE_QUEEN:
@@ -738,7 +749,7 @@ void un_make_move( unsigned int move, int ply )
                 break;
 
             case WHITE_PAWN:
-                if( special == 4 )
+                if (special == 4)
                     {
                     int capSQ = to + 8;
                     board->rotate_90 &= not_mask[rotate_90[to]];
@@ -776,28 +787,31 @@ unsigned int next_move( int ply, int side )
         {
         case 0:
             ply_info[ply].gen_stage = 1;
-            if( ply_info[ply].hash_move )
+
+            if (ply_info[ply].hash_move)
                 return ply_info[ply].hash_move;
 
         case 1:
             ply_info[ply].gen_stage = 2;
             ply_info[ply].num = gen_captures(ply_info[ply].move_list);
+
             for ( i = 0; i < ply_info[ply].num; i++ )
-                if( ply_info[ply].move_list[i] == ply_info[ply].hash_move )
+                if (ply_info[ply].move_list[i] == ply_info[ply].hash_move)
                     {
                     ply_info[ply].move_list[i] = ply_info[ply].move_list[--ply_info[ply].num];
                     break;
                     }
             ply_info[ply].num_lose = 0;
+
             for ( i = ply_info[ply].num - 1; i >= 0; i-- )
                 {
                 sort[i] = see(FROM(ply_info[ply].move_list[i]), TO(ply_info[ply].move_list[i]));
 
-                if( SPECIAL(ply_info[ply].move_list[i]) == 4 )
+                if (SPECIAL(ply_info[ply].move_list[i]) == 4)
                     sort[i] += pawn_value;
                 sort[i] += promote_values[PROMOTE(ply_info[ply].move_list[i])];
 
-                if( sort[i] < 0 )
+                if (sort[i] < 0)
                     {
                     ply_info[ply].lose_list[ply_info[ply].num_lose++] = ply_info[ply].move_list[i];
                     ply_info[ply].move_list[i] = ply_info[ply].move_list[--ply_info[ply].num];
@@ -805,20 +819,21 @@ unsigned int next_move( int ply, int side )
                     }
                 }
             spot = ply_info[ply].num;
-            while( 1 )
+
+            while (1)
                 {
                 high = -1;
 
                 for ( i = --spot; i >= 0; i-- )
                     {
-                    if( sort[i] > high )
+                    if (sort[i] > high)
                         {
                         high = sort[i];
                         h_index = i;
                         }
                     }
 
-                if( high == -1 )
+                if (high == -1)
                     break;
                 ret_move = ply_info[ply].move_list[spot];
                 ply_info[ply].move_list[spot] = ply_info[ply].move_list[h_index];
@@ -830,13 +845,14 @@ unsigned int next_move( int ply, int side )
                 }
 
         case 2:
-            if( ply_info[ply].num )
+            if (ply_info[ply].num)
                 return ply_info[ply].move_list[--ply_info[ply].num];
             ply_info[ply].gen_stage = 3;
 
         case 3:
             ply_info[ply].gen_stage = 4;
-            if( killer[0][ply] != ply_info[ply].hash_move && legal(killer[0][ply]) )
+
+            if (killer[0][ply] != ply_info[ply].hash_move && legal(killer[0][ply]))
                 {
                 ply_info[ply].killer_1 = killer[0][ply];
                 return killer[0][ply];
@@ -844,7 +860,8 @@ unsigned int next_move( int ply, int side )
 
         case 4:
             ply_info[ply].gen_stage = 5;
-            if( killer[1][ply] != ply_info[ply].hash_move && legal(killer[1][ply]) )
+
+            if (killer[1][ply] != ply_info[ply].hash_move && legal(killer[1][ply]))
                 {
                 ply_info[ply].killer_2 = killer[1][ply];
                 return killer[1][ply];
@@ -854,18 +871,20 @@ unsigned int next_move( int ply, int side )
             ply_info[ply].gen_stage = 6;
             ply_info[ply].num_history = 0;
             ply_info[ply].num = gen_moves(ply_info[ply].move_list);
+
             for ( i = 0; i < ply_info[ply].num; i++ )
-                if( ply_info[ply].move_list[i]
+                if (ply_info[ply].move_list[i]
                     && (ply_info[ply].move_list[i] == ply_info[ply].hash_move
                         || ply_info[ply].move_list[i] == ply_info[ply].killer_1
-                        || ply_info[ply].move_list[i] == ply_info[ply].killer_2) )
+                        || ply_info[ply].move_list[i] == ply_info[ply].killer_2))
                     ply_info[ply].move_list[i] = 0;
 
         case 6:
             ply_info[ply].num_history++;
             high = -1;
+
             for ( i = 0; i < ply_info[ply].num; i++ )
-                if( ply_info[ply].move_list[i] )
+                if (ply_info[ply].move_list[i])
                     {
                     temp =
                         side
@@ -873,31 +892,34 @@ unsigned int next_move( int ply, int side )
                                 ? history_black[FROM(ply_info[ply].move_list[i])][TO(ply_info[ply].move_list[i])]
                                 : history_white[FROM(ply_info[ply].move_list[i])][TO(ply_info[ply].move_list[i])];
 
-                    if( temp > high )
+                    if (temp > high)
                         {
                         high = temp;
                         h_index = i;
                         }
                     }
-            if( high == -1 )
+
+            if (high == -1)
                 {
                 ply_info[ply].gen_stage = 8;
                 return 0;
                 }
-            if( ply_info[ply].num_history >= HISTORY_SCANS )
+
+            if (ply_info[ply].num_history >= HISTORY_SCANS)
                 ply_info[ply].gen_stage = 7;
             ret_move = ply_info[ply].move_list[h_index];
             ply_info[ply].move_list[h_index] = 0;
             return ret_move;
 
         case 7:
-            while( --ply_info[ply].num >= 0 && !ply_info[ply].move_list[ply_info[ply].num] );
-            if( ply_info[ply].num >= 0 )
+            while (--ply_info[ply].num >= 0 && !ply_info[ply].move_list[ply_info[ply].num]);
+
+            if (ply_info[ply].num >= 0)
                 return ply_info[ply].move_list[ply_info[ply].num];
             ply_info[ply].gen_stage = 8;
 
         case 8:
-            if( ply_info[ply].num_lose )
+            if (ply_info[ply].num_lose)
                 return ply_info[ply].lose_list[--ply_info[ply].num_lose];
             ply_info[ply].gen_stage = 9;
         }

@@ -14,7 +14,6 @@
 #include "util.h"
 
 //vars
-
 int hash_entries;
 hash_entry *smart_hash;
 hash_entry *basic_hash;
@@ -24,20 +23,17 @@ bitboard castle_modifier[4];
 
 void init_hash()
     {
-    int size = hash_size;
+	int size = hash_size;
 
-    if( size < 8 )
-        size = 8;
-
-    if( size > 1024 )
-        size = 1024;
+    if(size < 8) size = 8;
+    if(size > 1024) size = 1024;
 
     size *= 1024 * 1024 / 2;
 
     smart_hash = (hash_entry *)malloc(size * sizeof(hash_entry) / 4);
     basic_hash = (hash_entry *)malloc(size * sizeof(hash_entry) / 4);
 
-    hash_entries = size / sizeof(hash_entry);
+	hash_entries = size / sizeof(hash_entry);
 
     int q;
     int t;
@@ -106,20 +102,20 @@ bitboard hash_board( bit_board *brd )
     bitboard hash_val = 0;
 
     for ( q = 0; q < 64; q++ )
-        if( brd->square[q] != EMPTY )
+        if (brd->square[q] != EMPTY)
             hash_val ^= hash_data[q][piece_num[brd->square[q]]];
     hash_val ^= ep_modifier[brd->ep];
 
-    if( !(board->castle & 1) )
+    if (!(board->castle & 1))
         hash_val ^= castle_modifier[0];
 
-    if( !(board->castle & 2) )
+    if (!(board->castle & 2))
         hash_val ^= castle_modifier[1];
 
-    if( !(board->castle & 4) )
+    if (!(board->castle & 4))
         hash_val ^= castle_modifier[2];
 
-    if( !(board->castle & 8) )
+    if (!(board->castle & 8))
         hash_val ^= castle_modifier[3];
     return hash_val;
     }
@@ -129,10 +125,11 @@ void set_hash( int score, int ply, int depth, char tag, unsigned int move, int s
     switch( tag )
         {
         case EQUAL_TRUE:
-            if( score > NEAR_MATE )
+
+            if (score > NEAR_MATE)
                 score += ply;
 
-            else if( score < -NEAR_MATE )
+            else if (score < -NEAR_MATE)
                 score -= ply;
             break;
 
@@ -146,13 +143,14 @@ void set_hash( int score, int ply, int depth, char tag, unsigned int move, int s
     bitboard key = BLACK_SIDE(side) ? board->key : ~board->key;
     bitboard hash_index = key &(hash_entries - 1);
 
-    if( smart_hash[hash_index].key != key || smart_hash[hash_index].old || smart_hash[hash_index].depth < depth
+    if (smart_hash[hash_index].key != key || smart_hash[hash_index].old
+		|| smart_hash[hash_index].depth < depth
         || (smart_hash[hash_index].depth == depth
             && (tag == EQUAL_TRUE
-                || (tag == BELOW_TRUE && smart_hash[hash_index].tag == BELOW_TRUE
-                    && score > smart_hash[hash_index].score)
-                || (tag == ABOVE_TRUE && smart_hash[hash_index].tag == ABOVE_TRUE
-                    && score < smart_hash[hash_index].score))) )
+        || (tag == BELOW_TRUE && smart_hash[hash_index].tag == BELOW_TRUE
+            && score > smart_hash[hash_index].score)
+        || (tag == ABOVE_TRUE && smart_hash[hash_index].tag == ABOVE_TRUE
+            && score < smart_hash[hash_index].score))))
         {
         basic_hash[hash_index] = smart_hash[hash_index];
 
@@ -180,33 +178,35 @@ int get_hash( int ply, int depth, int *alpha, int *beta, int side )
     int t1;
     char return_tag = NIX;
 
-    if( smart_hash[hash_index].key == key )
+    if (smart_hash[hash_index].key == key)
         do
             {
             smart_hash[hash_index].old = 0;
 
-            if( smart_hash[hash_index].tag == ABOVE_TRUE
+            if (smart_hash[hash_index].tag == ABOVE_TRUE
                 && smart_hash[hash_index].depth >= (depth - NULL_REDUCTION(depth))
-                && smart_hash[hash_index].score < *beta )
+				&& smart_hash[hash_index].score < *beta)
                 return_tag = NULL_FAILS;
 
-            if( smart_hash[hash_index].depth < depth )
+            if (smart_hash[hash_index].depth < depth)
                 break;
 
             switch( smart_hash[hash_index].tag )
                 {
                 case EQUAL_TRUE:
                     t1 = smart_hash[hash_index].score;
-                    if( t1 > NEAR_MATE )
+
+                    if (t1 > NEAR_MATE)
                         t1 -= ply;
 
-                    else if( t1 < -NEAR_MATE )
+                    else if (t1 < -NEAR_MATE)
                         t1 += ply;
                     *alpha = t1;
                     return EQUAL_TRUE;
 
                 case ABOVE_TRUE:
-                    if( smart_hash[hash_index].score <= *alpha )
+
+                    if (smart_hash[hash_index].score <= *alpha)
                         {
                         *alpha = smart_hash[hash_index].score;
                         return ABOVE_TRUE;
@@ -214,7 +214,7 @@ int get_hash( int ply, int depth, int *alpha, int *beta, int side )
                     break;
 
                 case BELOW_TRUE:
-                    if( smart_hash[hash_index].score >= *beta )
+                    if (smart_hash[hash_index].score >= *beta)
                         {
                         *beta = smart_hash[hash_index].score;
                         return BELOW_TRUE;
@@ -222,31 +222,33 @@ int get_hash( int ply, int depth, int *alpha, int *beta, int side )
                 }
             } while ( 0 );
 
-    if( basic_hash[hash_index].key == key )
+    if (basic_hash[hash_index].key == key)
         do
             {
-            if( basic_hash[hash_index].tag == ABOVE_TRUE
+            if (basic_hash[hash_index].tag == ABOVE_TRUE
                 && basic_hash[hash_index].depth >= (depth - NULL_REDUCTION(depth))
-                && basic_hash[hash_index].score < *beta )
+				&& basic_hash[hash_index].score < *beta)
                 return_tag = NULL_FAILS;
 
-            if( basic_hash[hash_index].depth < depth )
+            if (basic_hash[hash_index].depth < depth)
                 break;
 
             switch( basic_hash[hash_index].tag )
                 {
                 case EQUAL_TRUE:
                     t1 = basic_hash[hash_index].score;
-                    if( t1 > NEAR_MATE )
+
+                    if (t1 > NEAR_MATE)
                         t1 -= ply;
 
-                    else if( t1 < -900000 )
+                    else if (t1 < -900000)
                         t1 += ply;
                     *alpha = t1;
                     return EQUAL_TRUE;
 
                 case ABOVE_TRUE:
-                    if( basic_hash[hash_index].score <= *alpha )
+
+                    if (basic_hash[hash_index].score <= *alpha)
                         {
                         *alpha = basic_hash[hash_index].score;
                         return ABOVE_TRUE;
@@ -254,7 +256,7 @@ int get_hash( int ply, int depth, int *alpha, int *beta, int side )
                     break;
 
                 case BELOW_TRUE:
-                    if( basic_hash[hash_index].score >= *beta )
+                    if (basic_hash[hash_index].score >= *beta)
                         {
                         *beta = basic_hash[hash_index].score;
                         return BELOW_TRUE;
@@ -269,13 +271,13 @@ unsigned int get_move( int side )
     bitboard key = BLACK_SIDE(side) ? board->key : ~board->key;
     bitboard hash_index = key &(hash_entries - 1);
 
-    if( smart_hash[hash_index].key == key )
+    if (smart_hash[hash_index].key == key)
         {
         smart_hash[hash_index].old = 0;
         return smart_hash[hash_index].move_to_try;
         }
 
-    if( basic_hash[hash_index].key == key )
+    if (basic_hash[hash_index].key == key)
         {
         return basic_hash[hash_index].move_to_try;
         }

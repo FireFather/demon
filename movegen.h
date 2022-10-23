@@ -6,7 +6,6 @@
 #define MOVEGEN_H
 
 //function headers
-
 int gen_all( unsigned int *move_list );
 int gen_moves( unsigned int *move_list );
 int gen_captures( unsigned int *move_list );
@@ -32,4 +31,5 @@ void gen_white_rook_queen_captures();
 void gen_black_rook_queen_captures();
 void gen_white_king_captures();
 void gen_black_king_captures();
+
 #endif

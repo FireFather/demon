@@ -8,6 +8,7 @@
 #include <string.h>
 #include "string.h"
 
+#include "bitops.h"
 #include "bitboard.h"
 #include "define.h"
 #include "draw.h"
@@ -24,49 +25,48 @@ int alpha_numeric_to_int( char c, char n )
 
 int str_to_move( const char *input )
     {
-    if( isalpha((int)input[0]) && isdigit((int)input[1]) && isalpha((int)input[2]) && isdigit((int)input[3]) )
+    if (isalpha((int)input[0]) && isdigit((int)input[1]) && isalpha((int)input[2])
+        && isdigit((int)input[3]))
         {
         unsigned int move =
             alpha_numeric_to_int(input[0], input[1]) | (board->square[alpha_numeric_to_int(input[0], input[1])] << 12)
                 | (alpha_numeric_to_int(input[2], input[3]) << 6)
                 | (board->square[alpha_numeric_to_int(input[2], input[3])] << 16);
 
-        if( isalpha((int)input[4] == 'q') || isalpha((int)input[4] == 'Q') )
+        if (isalpha((int)input[4] == 'q') || isalpha((int)input[4] == 'Q'))
             promote = 4;
 
-        else if( isalpha((int)input[4] == 'r') || isalpha((int)input[4] == 'R') )
+        else if (isalpha((int)input[4] == 'r') || isalpha((int)input[4] == 'R'))
             promote = 3;
 
-        else if( isalpha((int)input[4] == 'b') || isalpha((int)input[4] == 'B') )
+        else if (isalpha((int)input[4] == 'b') || isalpha((int)input[4] == 'B'))
             promote = 2;
 
-        else if( isalpha((int)input[4] == 'n') || isalpha((int)input[4] == 'N') )
+        else if (isalpha((int)input[4] == 'n') || isalpha((int)input[4] == 'N'))
             promote = 1;
 
-        if( (PIECE(move) & 7) == 6 )
+        if ((PIECE(move) & 7) == 6)
             {
-            if( ((TO(move) & 7) - (FROM(move) & 7)) == 2 )
+            if (((TO(move) & 7) - (FROM(move) & 7)) == 2)
                 move |= (2 << 20);
 
-            else if( ((TO(move) & 7) - (FROM(move) & 7)) == -2 )
+            else if (((TO(move) & 7) - (FROM(move) & 7)) == -2)
                 move |= (1 << 20);
             }
 
-        if( ((PIECE(move) & 7) == 5) && (CAPTURED(move) == 0) && ((FROM(move) & 7) != (TO(move) & 7)) )
+        if (((PIECE(move) & 7) == 5) && (CAPTURED(move) == 0) && ((FROM(move) & 7) != (TO(move) & 7)))
             {
-            if( PIECE(move) == 5 )
+            if (PIECE(move) == 5)
                 {
                 move =
-                    alpha_numeric_to_int(input[0], input[1])
-                        | (board->square[alpha_numeric_to_int(input[0], input[1])] << 12)
-                            | (alpha_numeric_to_int(input[2], input[3]) << 6) | (WHITE_PAWN << 16) | (4 << 20);
+                    alpha_numeric_to_int(input[0], input[1]) | (board->square[alpha_numeric_to_int(input[0], input[1])] << 12)
+                        | (alpha_numeric_to_int(input[2], input[3]) << 6) | (WHITE_PAWN << 16) | (4 << 20);
                 }
             else
                 {
                 move =
-                    alpha_numeric_to_int(input[0], input[1])
-                        | (board->square[alpha_numeric_to_int(input[0], input[1])] << 12)
-                            | (alpha_numeric_to_int(input[2], input[3]) << 6) | (BLACK_PAWN << 16) | (4 << 20);
+                    alpha_numeric_to_int(input[0], input[1]) | (board->square[alpha_numeric_to_int(input[0], input[1])] << 12)
+                        | (alpha_numeric_to_int(input[2], input[3]) << 6) | (BLACK_PAWN << 16) | (4 << 20);
                 }
             }
         return move;
@@ -95,7 +95,7 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
         {
         case BLACK_PAWN:
             {
-            if( CAPTURED(m) == 0 )
+            if (CAPTURED(m) == 0)
                 {
                 alg[0] = (char)(104 - TO(m) % 8);
                 alg[1] = (char)(TO(m) / 8 + 49);
@@ -116,24 +116,24 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
             {
             alg[0] = 'R';
 
-            if( b->turn )
+            if (b->turn)
                 hold = b->black_rooks;
             else
                 hold = b->white_rooks;
             sq = TO(m);
 
-            if( pop_count((rook_attack_horiz[sq][((board->white_pieces | board->black_pieces)
+            if (pop_count((rook_attack_horiz[sq][((board->white_pieces | board->black_pieces)
                 >> horiz_shift[sq]) & 0xff]
                 | rook_attack_vert[sq][(board->rotate_90 >> vert_shift[sq]) & 0xff]) & hold)
-                > 1 )
+                > 1)
                 {
                 alg[1] = (char)(104 - FROM(m) % 8);
                 at = 2;
 
-                if( pop_count(((rook_attack_horiz[sq][((board->white_pieces | board->black_pieces)
+                if (pop_count(((rook_attack_horiz[sq][((board->white_pieces | board->black_pieces)
                     >> horiz_shift[sq]) & 0xff]
                     | rook_attack_vert[sq][(board->rotate_90 >> vert_shift[sq]) & 0xff]) & hold) & file[FROM(m) % 8])
-                    > 1 )
+                    > 1)
                     {
                     alg[2] = (char)(FROM(m) / 8 + 49);
                     at = 3;
@@ -146,18 +146,18 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
             {
             alg[0] = 'N';
 
-            if( b->turn )
+            if (b->turn)
                 hold = b->black_knights;
             else
                 hold = b->white_knights;
             sq = TO(m);
 
-            if( pop_count(knight_moves[sq] & hold) > 1 )
+            if (pop_count(knight_moves[sq] & hold) > 1)
                 {
                 alg[1] = (char)(104 - FROM(m) % 8);
                 at = 2;
 
-                if( pop_count((knight_moves[sq]&hold) &file[FROM(m) % 8]) > 1 )
+                if (pop_count((knight_moves[sq]&hold) &file[FROM(m) % 8]) > 1)
                     {
                     alg[2] = (char)(FROM(m) / 8 + 49);
                     at = 3;
@@ -170,24 +170,23 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
             {
             alg[0] = 'B';
 
-            if( b->turn )
+            if (b->turn)
                 hold = b->black_bishops;
             else
                 hold = b->white_bishops;
             sq = TO(m);
 
-            if( pop_count((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
+            if (pop_count((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
                 | attack_rotate_45[sq][(board->rotate_45 >> rotate_45_shift[sq]) & rotate_45_mask[sq]]) & hold)
-                > 1 )
+                > 1)
                 {
                 alg[1] = (char)(104 - FROM(m) % 8);
                 at = 2;
 
-                if( pop_count(((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
-                    | attack_rotate_45[sq][(board->rotate_45
-                        >> rotate_45_shift[sq]) & rotate_45_mask[sq]]) & hold) & file[FROM(m)
+                if (pop_count(((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
+                    | attack_rotate_45[sq][(board->rotate_45 >> rotate_45_shift[sq]) & rotate_45_mask[sq]]) & hold) & file[FROM(m)
                     % 8])
-                    > 1 )
+                    > 1)
                     {
                     alg[2] = (char)(FROM(m) / 8 + 49);
                     at = 3;
@@ -200,24 +199,23 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
             {
             alg[0] = 'Q';
 
-            if( b->turn )
+            if (b->turn)
                 hold = b->black_queens;
             else
                 hold = b->white_queens;
             sq = TO(m);
 
-            if( pop_count((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
+            if (pop_count((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
                 | attack_rotate_45[sq][(board->rotate_45 >> rotate_45_shift[sq]) & rotate_45_mask[sq]]) & hold)
-                > 1 )
+                > 1)
                 {
                 alg[1] = (char)(104 - FROM(m) % 8);
                 at = 2;
 
-                if( pop_count(((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
-                    | attack_rotate_45[sq][(board->rotate_45
-                        >> rotate_45_shift[sq]) & rotate_45_mask[sq]]) & hold) & file[FROM(m)
+                if (pop_count(((attack_rotate_135[sq][(board->rotate_135 >> rotate_135_shift[sq]) & rotate_135_mask[sq]]
+                    | attack_rotate_45[sq][(board->rotate_45 >> rotate_45_shift[sq]) & rotate_45_mask[sq]]) & hold) & file[FROM(m)
                     % 8])
-                    > 1 )
+                    > 1)
                     {
                     alg[2] = (char)(FROM(m) / 8 + 49);
                     at = 3;
@@ -228,7 +226,7 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
 
         case BLACK_KING:
             {
-            if( SPECIAL(m) == 1 )
+            if (SPECIAL(m) == 1)
                 {
                 alg[0] = 'O';
                 alg[1] = '-';
@@ -236,7 +234,7 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
                 alg[3] = 0;
                 return alg;
                 }
-            else if( SPECIAL(m) == 2 )
+            else if (SPECIAL(m) == 2)
                 {
                 alg[0] = 'O';
                 alg[1] = '-';
@@ -251,7 +249,7 @@ char *to_short_algebraic( bit_board *b, unsigned int m )
             }
         }
 
-    if( CAPTURED(m) == 0 )
+    if (CAPTURED(m) == 0)
         {
         alg[at] = (char)(104 - TO(m) % 8);
         alg[at + 1] = (char)(TO(m) / 8 + 49);
@@ -271,17 +269,17 @@ void parse_position( char string [] )
     {
 
     const char *fen = "";
-    char *moves;
+    char* moves;
     const char *ptr;
     char move_string[256];
     int move;
 
     move_number = 0;
-    moves = strstr(string, "moves ");
+	moves = strstr(string, "moves ");
 
-    if( fen != NULL )
+    if(fen != NULL)
         {
-        if( moves != NULL )
+        if(moves != NULL)
             {
             moves[-1] = '\0';
             }
@@ -290,19 +288,19 @@ void parse_position( char string [] )
     else
         set_start_position();
 
-    if( moves != NULL )
+    if (moves != NULL)
         {
 
         ptr = moves + 6;
 
-        while( *ptr != '\0' )
+        while (*ptr != '\0')
             {
             move_string[0] = *ptr++;
             move_string[1] = *ptr++;
             move_string[2] = *ptr++;
             move_string[3] = *ptr++;
 
-            if( *ptr == '\0' || *ptr == ' ' )
+            if (*ptr == '\0' || *ptr == ' ')
                 {
                 move_string[4] = '\0';
                 }
@@ -311,13 +309,13 @@ void parse_position( char string [] )
                 move_string[4] = *ptr++;
                 move_string[5] = '\0';
                 }
-            move = str_to_move(move_string);
+			move = str_to_move(move_string);
 
             make_move(move, 0);
             move_number++;
             position_list[move_number] = board->key;
 
-            while( *ptr == ' ' )
+            while (*ptr == ' ')
                 ptr++;
             }
         }
@@ -328,9 +326,9 @@ void get( char str [], int n )
     char c;
     int i = 0;
 
-    while( (c = getchar()) != '\n' )
+    while ((c = getchar()) != '\n')
         {
-        if( i < n )
+        if (i < n)
             {
             str[i++] = c;
             }
@@ -342,3 +340,4 @@ bool string_starts( char s1 [], char s2 [] )
     {
     return strstr(s1, s2) == s1;
     }
+

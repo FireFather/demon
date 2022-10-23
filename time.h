@@ -6,6 +6,6 @@
 #define TIME_H
 
 //function headers
-
 double get_move_time();
+
 #endif

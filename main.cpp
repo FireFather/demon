@@ -12,9 +12,9 @@
 
 int main()
     {
-    show_version();
+	show_version();
     init();
-    get_options();
+	get_options();
     process_input();
     return 0;
     }

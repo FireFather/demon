@@ -26,14 +26,9 @@ unsigned int get_move( int side );
 
 //extern
 extern int hash_entries;
-
 extern hash_entry *smart_hash;
-
 extern hash_entry *basic_hash;
-
 extern bitboard hash_data[64][12];
-
 extern bitboard ep_modifier[64];
-
 extern bitboard castle_modifier[4];
 #endif

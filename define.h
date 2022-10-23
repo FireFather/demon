@@ -2,12 +2,30 @@
 //demon define.h
 //
 
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef DEFINE_H
+#define DEFINE_H
+
+#define WIN64
 
 #define NAME "Demon"
-#define VERSION "1.0"
-#define AUTHOR "Kranium"
+#define VERSION "1.1"
+
+#ifdef WIN64
+#define PLATFORM "x64"
+#else
+#define PLATFORM "w32"
+#endif
+
+#define AUTHOR "Norman Schmidt"
+
+#pragma warning(disable : 4244)
+// conversion from 'int' to 'short', possible loss of data
+#pragma warning(disable : 4146)
+// unary minus operator applied to unsigned type, result still unsigned
+#pragma warning(disable : 4996)
+// 'sscanf': This function or variable may be unsafe
+
+#define ABS(x) (((x) >= 0) ? (x) : -(x))
 
 //fractional ply
 #define ONE_PLY 40
@@ -36,8 +54,8 @@
 //search defines
 #define MATE 30000
 #define NEAR_MATE 29000
-#define INFINITY 31000
-#define LIMIT 32000
+#define LIMIT 31000
+#define MAX 32000
 
 #define WHITE 0
 #define BLACK 1
@@ -149,4 +167,5 @@
 #define WHITE_PIECE(p) ((p)&8)
 
 #define NULL_REDUCTION(d) ((d)> 6 * ONE_PLY ? 4 * ONE_PLY : 3 * ONE_PLY)
+
 #endif

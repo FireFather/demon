@@ -13,13 +13,15 @@
 
 bool use_log = false;
 
-int pawn_value = 100;
-int knight_value = 325;
-int bishop_value = 325;
+int pawn_value =  100;
+int knight_value = 320;
+int bishop_value = 330;
 int rook_value = 500;
 int queen_value = 1000;
 
-int total_value = (16 * pawn_value + 4 * knight_value + 4 * bishop_value + 4 * rook_value + 2 * queen_value);
+int total_value = (16 * pawn_value + 4 * knight_value
+				  + 4 * bishop_value + 4 * rook_value
+				  + 2 * queen_value);
 
 int number_of_options = 0;
 
@@ -50,20 +52,20 @@ void init_options( void )
     define_option("Hash", "128", UCI_SPIN, 8, 1024);
     define_option("Log", "false", UCI_CHECK, 0, 0);
     define_option("Pawn", "100", UCI_SPIN, 0, 200);
-    define_option("Knight", "325", UCI_SPIN, 0, 650);
-    define_option("Bishop", "325", UCI_SPIN, 0, 650);
+    define_option("Knight", "320", UCI_SPIN, 0, 650);
+    define_option("Bishop", "330", UCI_SPIN, 0, 650);
     define_option("Rook", "500", UCI_SPIN, 0, 1000);
-    define_option("Queen", "1000", UCI_SPIN, 0, 1950);
+    define_option("Queen", "1000", UCI_SPIN, 0, 2000);
     }
 
 void get_options( void )
     {
     hash_size = (get_option_int("Hash"));
 
-    if( get_option_bool("Log") )
-        use_log = true;
-    else
-        use_log = false;
+	if (get_option_bool("Log"))
+		use_log = true;
+	else
+		use_log = false;
 
     pawn_value = (get_option_int("Pawn"));
     knight_value = (get_option_int("Knight"));
@@ -85,7 +87,7 @@ void define_option( char *name, char *default_value, int type, int min, int max,
     new_option->min = min;
     new_option->max = max;
 
-    if( new_option->type == UCI_COMBO )
+    if (new_option->type == UCI_COMBO)
         {
         va_list arglist;
         va_start(arglist, max);
@@ -94,9 +96,10 @@ void define_option( char *name, char *default_value, int type, int min, int max,
             {
             str = va_arg(arglist, char *);
 
-            if( str != NULL )
+            if (str != NULL)
                 strcpy(new_option->combo_vars[i++], str);
-            } while ( i < max );
+            }
+			while ( i < max );
         new_option->combo_vars[i][0] = '\0';
         va_end(arglist);
         }
@@ -114,7 +117,7 @@ void print_option( option_t *this_option )
     output("option name %s ", this_option->name);
     output("type %s ", option_type_name[this_option->type]);
 
-    if( this_option->type != UCI_BUTTON )
+    if (this_option->type != UCI_BUTTON)
         output("default %s ", this_option->default_value);
 
     switch( this_option->type )
@@ -143,7 +146,7 @@ void print_options( void )
 option_t *get_option_name( const char *option_name )
     {
     for ( int i = 0; i < number_of_options; i++ )
-        if( strcmp(option_name, uci_options[i].name) == 0 )
+        if (strcmp(option_name, uci_options[i].name) == 0)
             return uci_options + i;
     return NULL;
     }
@@ -172,13 +175,13 @@ void set_option( const char *option_name, const char *value )
     option_t *this_option = get_option_name(option_name);
     char *c;
 
-    if( this_option != NULL )
+    if (this_option != NULL)
         {
         strcpy(this_option->value, value);
 
         c = strchr(this_option->value, '\n');
 
-        if( c != NULL )
-            * c = '\0';
+        if (c != NULL)
+            *c = '\0';
         }
     }

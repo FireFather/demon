@@ -14,12 +14,12 @@
 
 void fill_pv( int ply, int depth, int side )
     {
-    if( ply == pv_length[0] )
+    if (ply == pv_length[0])
         {
         return;
         }
 
-    if( legal(pv[0][ply]) )
+    if (legal(pv[0][ply]))
         {
         set_hash(0, ply, depth, NIX, pv[0][ply], side);
         make_move(pv[0][ply], ply);
@@ -28,22 +28,21 @@ void fill_pv( int ply, int depth, int side )
         }
     }
 
-void print_pv( int score, int depth, int side )
+void print_pv(int score, int depth, int side )
     {
-    int i;
-    int nps;
-    int time_used;
+	int i;
+	int nps;
+	int time_used;
 
-    secs = ((float)(clock() - start_time)) / CLOCKS_PER_SEC;
+            secs = ((float)(clock() - start_time)) / CLOCKS_PER_SEC;
+			if (secs == 0)
+				secs = 1;
+            time_used = (int)(secs * 1000);
+			nps = nodes / time_used * 1000;
 
-    if( secs == 0 )
-        secs = 1;
-    time_used = (int)(secs * 1000);
-    nps = nodes / time_used * 1000;
+			output("info depth %d score cp %d time %d nodes %d nps %d %s ", depth, score, time_used, nodes, nps, "pv");
 
-    output("info depth %d score cp %d time %d nodes %d nps %d %s ", depth, score, time_used, nodes, nps, "pv");
-
-    for ( i = 0; i < pv_length[0]; i++ )
-        output("%s ", to_long_algebraic(board, pv[0][i]));
-    output("\n");
+            for ( i = 0; i < pv_length[0]; i++ )
+                output("%s ", to_long_algebraic(board, pv[0][i]));
+            output("\n");
     }

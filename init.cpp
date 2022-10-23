@@ -2,6 +2,7 @@
 //demon init.cpp
 //
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "bitboard.h"
 #include "define.h"
@@ -12,17 +13,15 @@
 #include "search.h"
 #include "util.h"
 
-#pragma warning( disable : 4244 )
-
 void init()
     {
     int i, j;
     board = (bit_board *)malloc(sizeof(bit_board));
-
-    set_start_position();
+	
+	set_start_position();
     init_bitboards();
-    init_options();
-    get_options();
+	init_options();
+	get_options();
     init_hash();
 
     board->turn = 0;
@@ -81,8 +80,8 @@ void init_bitboards()
         j = 0;
 
         for ( k = 0; k < 8; k++ )
-            if( i + knight_inc[k] >= 0 && i + knight_inc[k] < 64 )
-                if( abs((i + knight_inc[k]) % 8 - i % 8) + abs((i + knight_inc[k]) / 8 - i / 8) == 3 )
+            if (i + knight_inc[k] >= 0 && i + knight_inc[k] < 64)
+                if (ABS((i + knight_inc[k]) % 8 - i % 8) + ABS((i + knight_inc[k]) / 8 - i / 8) == 3)
                     {
                     j |= mask[i + knight_inc[k]];
                     }
@@ -98,8 +97,8 @@ void init_bitboards()
         j = 0;
 
         for ( k = 0; k < 8; k++ )
-            if( i + king_inc[k] >= 0 && i + king_inc[k] < 64 )
-                if( abs((i + king_inc[k]) % 8 - i % 8) + abs((i + king_inc[k]) / 8 - i / 8) < 3 )
+            if (i + king_inc[k] >= 0 && i + king_inc[k] < 64)
+                if (ABS((i + king_inc[k]) % 8 - i % 8) + ABS((i + king_inc[k]) / 8 - i / 8) < 3)
                     {
                     j |= mask[i + king_inc[k]];
                     }
@@ -129,7 +128,7 @@ void init_bitboards()
                 rook_move_horiz[i][q] |= j << k;
                 }
 
-            if( k < i + 8 - i % 8 )
+            if (k < i + 8 - i % 8)
                 rook_attack_horiz[i][q] |= j << k;
 
             for ( k = i - 1; k >= i - i % 8 && !((1 << (k % 8)) & q); k-- )
@@ -137,7 +136,7 @@ void init_bitboards()
                 rook_move_horiz[i][q] |= j << k;
                 }
 
-            if( k >= i - i % 8 )
+            if (k >= i - i % 8)
                 rook_attack_horiz[i][q] |= j << k;
             }
         }
@@ -159,7 +158,7 @@ void init_bitboards()
                 rook_move_vert[i][q] |= j << k;
                 }
 
-            if( k < 64 )
+            if (k < 64)
                 rook_attack_vert[i][q] |= j << k;
 
             for ( k = i - 8; k >= 0 && !((1 << (7 - k / 8)) & q); k -= 8 )
@@ -167,7 +166,7 @@ void init_bitboards()
                 rook_move_vert[i][q] |= j << k;
                 }
 
-            if( k >= 0 )
+            if (k >= 0)
                 rook_attack_vert[i][q] |= j << k;
             }
         }
@@ -192,18 +191,17 @@ void init_bitboards()
                 l++;
                 }
 
-            if( l < length_rotate_135[i] )
+            if (l < length_rotate_135[i])
                 attack_rotate_135[i][q] |= j << k;
             l = down_right[i];
 
-            for ( k = i - 9; l < length_rotate_135[i] && k >= 0 && !((1 << (length_rotate_135[i] - l - 1)) & q);
-                k -= 9 )
+            for ( k = i - 9; l < length_rotate_135[i] && k >= 0 && !((1 << (length_rotate_135[i] - l - 1)) & q); k -= 9 )
                 {
                 move_rotate_135[i][q] |= j << k;
                 l++;
                 }
 
-            if( l < length_rotate_135[i] && k >= 0 )
+            if (l < length_rotate_135[i] && k >= 0)
                 attack_rotate_135[i][q] |= j << k;
             }
         }
@@ -228,7 +226,7 @@ void init_bitboards()
                 l++;
                 }
 
-            if( l < length_rotate_45[i] )
+            if (l < length_rotate_45[i])
                 attack_rotate_45[i][q] |= j << k;
             l = down_left[i];
 
@@ -238,7 +236,7 @@ void init_bitboards()
                 l++;
                 }
 
-            if( l < length_rotate_45[i] && k >= 0 )
+            if (l < length_rotate_45[i] && k >= 0)
                 attack_rotate_45[i][q] |= j << k;
             }
         }
@@ -250,9 +248,9 @@ void init_bitboards()
             {
             obstructed[i][q] = 0;
 
-            if( i / 8 == q / 8 )
+            if (i / 8 == q / 8)
                 {
-                if( i > q )
+                if (i > q)
                     {
                     for ( k = q + 1; k < i; k++ )
                         obstructed[i][q] |= (j << k);
@@ -263,9 +261,9 @@ void init_bitboards()
                         obstructed[i][q] |= (j << k);
                     }
                 }
-            else if( i % 8 == q % 8 )
+            else if (i % 8 == q % 8)
                 {
-                if( i > q )
+                if (i > q)
                     {
                     for ( k = q + 8; k < i; k += 8 )
                         obstructed[i][q] |= (j << k);
@@ -278,22 +276,22 @@ void init_bitboards()
                 }
             else
                 {
-                if( i % 8 < q % 8 && i / 8 > q / 8 )
+                if (i % 8 < q % 8 && i / 8 > q / 8)
                     {
                     for ( k = q + 7; k < i; k += 7 )
                         obstructed[i][q] |= (j << k);
                     }
-                else if( i % 8 > q % 8 && i / 8 > q / 8 )
+                else if (i % 8 > q % 8 && i / 8 > q / 8)
                     {
                     for ( k = q + 9; k < i; k += 9 )
                         obstructed[i][q] |= (j << k);
                     }
-                else if( i % 8 > q % 8 && i / 8 < q / 8 )
+                else if (i % 8 > q % 8 && i / 8 < q / 8)
                     {
                     for ( k = q - 7; k > i; k -= 7 )
                         obstructed[i][q] |= (j << k);
                     }
-                else if( i % 8 < q % 8 && i / 8 < q / 8 )
+                else if (i % 8 < q % 8 && i / 8 < q / 8)
                     {
                     for ( k = q - 9; k > i; k -= 9 )
                         obstructed[i][q] |= (j << k);
@@ -319,7 +317,7 @@ void init_bitboards()
 
     for ( i = 0; i < 64; i++ )
         {
-        if( board->square[i] != EMPTY )
+        if (board->square[i] != EMPTY)
             {
             board->rotate_90 |= mask[rotate_90[i]];
             board->rotate_135 |= mask[rotate_135[i]];
@@ -397,7 +395,7 @@ void init_bitboards()
         k = (i & -i) >> 1;
         ls_bits[i] = 0;
 
-        while( k > 0 )
+        while (k > 0)
             {
             ls_bits[i]++;
             k = k >> 1;
@@ -429,7 +427,7 @@ void init_bitboards()
             {
             rank_block_mask[i][l] = 0;
 
-            if( i < l )
+            if (i < l)
                 {
                 for ( k = i; k <= l; k++ )
                     rank_block_mask[i][l] |= rank[k];
@@ -445,7 +443,7 @@ void init_bitboards()
         for ( j = 0; j < 64; j++ )
             {
             distance[i][j] =
-                abs(FILE(i) - FILE(j)) > abs(RANK(i) - RANK(j)) ? abs(FILE(i) - FILE(j)) : abs(RANK(i) - RANK(j));
+                ABS(FILE(i) - FILE(j)) > ABS(RANK(i) - RANK(j)) ? ABS(FILE(i) - FILE(j)) : ABS(RANK(i) - RANK(j));
             }
     }
 
