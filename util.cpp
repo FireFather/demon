@@ -3,68 +3,69 @@
 //
 #include <windows.h>
 #include <cstdarg>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 #include <conio.h>
 
 #include "define.h"
 #include "bitboard.h"
 #include "options.h"
 #include "util.h"
+#include <string>
+#include <iostream>
 
-FILE *log_file;
+FILE* log_file;
 int j = 23;
 int k = 54;
 
-void show_version( void )
-    {
-    char *startup_banner =
-        "" NAME " " VERSION " " PLATFORM "\n"
-        "Norman Schmidt\n"
-        "" __DATE__ " " __TIME__ "\n";
+void show_version()
+{
+	const std::string startup_banner =
+		"" NAME " " VERSION " " PLATFORM "\n"
+		"Norman Schmidt\n"
+		"" __DATE__ " " __TIME__ "\n";
 
-    output(startup_banner);
-    }
+	std::cout << startup_banner;
+}
 
-void open_log( void )
-    {
-    char file_name[MAX_STRING];
-    char buf[MAX_STRING];
-    time_t now;
-    struct tm tnow;
-    time(&now);
-    tnow = *localtime(&now);
-    strftime(buf, 32, "%d%b-%H%M", &tnow);
-    sprintf(file_name, "%s %s %s %s.txt", NAME, VERSION, PLATFORM, buf);
-    log_file = fopen(file_name, "wt");
-    }
+void open_log()
+{
+	char file_name[MAX_STRING];
+	char buf[MAX_STRING];
+	time_t now;
+	tm tnow{};
+	time(&now);
+	tnow = *localtime(&now);
+	strftime(buf, 32, "%d%b-%H%M", &tnow);
+	sprintf(file_name, "%s %s %s %s.txt", NAME, VERSION, PLATFORM, buf);
+	log_file = fopen(file_name, "wt");
+}
 
-void close_log( void )
-    {
-    fclose(log_file);
-    }
+void close_log()
+{
+	fclose(log_file);
+}
 
-void output( const char format [], ... )
-    {
-    va_list arg_list;
-    char string[4096];
+void output(const char format[], ...)
+{
+	va_list arg_list;
+	char string[4096];
 
-    va_start(arg_list, format);
-    vsprintf(string, format, arg_list);
-    va_end(arg_list);
+	va_start(arg_list, format);
+	vsprintf(string, format, arg_list);
+	va_end(arg_list);
 
-    printf("%s", string);
+	printf("%s", string);
 
-    if (use_log)
-        fprintf(log_file, string, "\n");
-    }
+	if (use_log)
+		fprintf(log_file, string, "\n");
+}
 
 unsigned int Y[55] =
-    {
-    1217451684UL, 2816712964UL, 2334535705UL, 3950095883UL,
+{
+	1217451684UL, 2816712964UL, 2334535705UL, 3950095883UL,
 	2265551681UL, 1770752961UL, 2185226958UL, 2388687450UL,
-    1916922145UL, 2392106166UL, 2943953050UL, 3742610289UL,
+	1916922145UL, 2392106166UL, 2943953050UL, 3742610289UL,
 	3609265228UL, 3522957869UL, 3171739406UL, 2752878121UL,
 	2921639267UL, 2875042281UL, 2211563587UL, 2884710826UL,
 	1010629021UL, 1431560701UL, 3627189000UL, 2880283151UL,
@@ -76,52 +77,49 @@ unsigned int Y[55] =
 	4139787478UL, 2375474592UL, 1158011394UL, 2673463024UL,
 	1724129812UL, 1478156632UL, 2645137599UL, 1206899692UL,
 	4256603317UL, 1307629121UL, 3140483415UL
-    };
+};
 
 bitboard get_random_64()
-    {
-    bitboard lower32;
-    bitboard upper32;
+{
+	Y[k] = Y[k] + Y[j];
+	const bitboard lower32 = Y[k];
 
-    Y[k] = (unsigned int)(Y[k] + Y[j]);
-    lower32 = Y[k];
+	j--;
+	k--;
 
-    j--;
-    k--;
+	if (j < 0)
+		j = 54;
 
-    if (j < 0)
-        j = 54;
+	if (k < 0)
+		k = 54;
 
-    if (k < 0)
-        k = 54;
+	Y[k] = Y[k] + Y[j];
+	const bitboard upper32 = Y[k];
 
-    Y[k] = (unsigned int)(Y[k] + Y[j]);
-    upper32 = Y[k];
+	j--;
+	k--;
 
-    j--;
-    k--;
+	if (j < 0)
+		j = 54;
 
-    if (j < 0)
-        j = 54;
+	if (k < 0)
+		k = 54;
 
-    if (k < 0)
-        k = 54;
+	return lower32 | upper32 << 32;
+}
 
-    return lower32 | (upper32 << 32);
-    }
 int InputAvailable()
 {
 	//	if (stdin->cnt > 0) return 1;
 
 	static HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 	DWORD mode;
-	static BOOL console = GetConsoleMode(hInput, &mode);
 
-	if (!console)
+	if (static BOOL console = GetConsoleMode(hInput, &mode); !console)
 	{
 		DWORD total_bytes_avail;
-		if (!PeekNamedPipe(hInput, 0, 0, 0, &total_bytes_avail, 0))	return true;
+		if (!PeekNamedPipe(hInput, nullptr, 0, nullptr, &total_bytes_avail, nullptr)) return true;
 		return total_bytes_avail;
 	}
-	else return _kbhit();
+	return _kbhit();
 }

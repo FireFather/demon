@@ -2,45 +2,44 @@
 //demon bitboard.h
 //
 
-#ifndef BITBOARD_H
-#define BITBOARD_H
+#pragma once
 
-#include "define.h"
+#include <cstdint>
 
-typedef unsigned __int64 bitboard;
+using bitboard = uint64_t;
 
-typedef struct
-    {
-    char ep;
-    int turn;
-    int score;
-    char castle;
-    bitboard key;
-    int square[64];
-    int white_king;
-    int black_king;
-    bitboard white_knights;
-    bitboard black_knights;
-    bitboard white_bishops;
-    bitboard black_bishops;
-    bitboard white_rooks;
-    bitboard black_rooks;
-    bitboard white_queens;
-    bitboard black_queens;
-    bitboard white_pawns;
-    bitboard black_pawns;
-    bitboard white_pieces;
-    bitboard black_pieces;
-    bitboard rotate_45;
-    bitboard rotate_90;
-    bitboard rotate_135;
-    } bit_board;
+using bit_board = struct
+{
+	char ep;
+	int turn;
+	int score;
+	char castle;
+	bitboard key;
+	int square[64];
+	int white_king;
+	int black_king;
+	bitboard white_knights;
+	bitboard black_knights;
+	bitboard white_bishops;
+	bitboard black_bishops;
+	bitboard white_rooks;
+	bitboard black_rooks;
+	bitboard white_queens;
+	bitboard black_queens;
+	bitboard white_pawns;
+	bitboard black_pawns;
+	bitboard white_pieces;
+	bitboard black_pieces;
+	bitboard rotate_45;
+	bitboard rotate_90;
+	bitboard rotate_135;
+};
 
 //extern bitboards
 extern bitboard file[8];
 extern bitboard rank[8];
 extern bitboard mask[64];
-extern bit_board *board;
+extern bit_board* board;
 extern bitboard zero_left;
 extern bitboard zero_right;
 extern bitboard not_mask[64];
@@ -86,5 +85,3 @@ extern int down_right[64];
 extern int down_left[64];
 extern int up_left[64];
 extern int up_right[64];
-
-#endif

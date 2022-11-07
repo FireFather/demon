@@ -2,15 +2,12 @@
 //demon define.h
 //
 
-#ifndef DEFINE_H
-#define DEFINE_H
-
-#define WIN64
+#pragma once
 
 #define NAME "Demon"
-#define VERSION "1.1"
+#define VERSION "1.2"
 
-#ifdef WIN64
+#ifdef _WIN64
 #define PLATFORM "x64"
 #else
 #define PLATFORM "w32"
@@ -18,12 +15,13 @@
 
 #define AUTHOR "Norman Schmidt"
 
-#pragma warning(disable : 4244)
-// conversion from 'int' to 'short', possible loss of data
-#pragma warning(disable : 4146)
-// unary minus operator applied to unsigned type, result still unsigned
-#pragma warning(disable : 4996)
-// 'sscanf': This function or variable may be unsafe
+#pragma warning(disable : 4100) // 'side': unreferenced formal parameter
+#pragma warning(disable : 4244) // conversion from 'int' to 'short', possible loss of data
+#pragma warning(disable : 4146) // unary minus operator applied to unsigned type, result still unsigned
+#pragma warning(disable : 4456) // declaration of 'value' hides previous local declaration
+#pragma warning(disable : 4459) // declaration of 'move_time' hides global declaration
+#pragma warning(disable : 4706) // assignment within conditional expression
+#pragma warning(disable : 4996) // 'sscanf': This function or variable may be unsafe
 
 #define ABS(x) (((x) >= 0) ? (x) : -(x))
 
@@ -168,4 +166,3 @@
 
 #define NULL_REDUCTION(d) ((d)> 6 * ONE_PLY ? 4 * ONE_PLY : 3 * ONE_PLY)
 
-#endif

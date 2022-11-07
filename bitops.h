@@ -1,14 +1,18 @@
-#include <nmmintrin.h>
-#include <intrin.h> 
+//
+//demon bitops.h
+//
+#pragma once
 
-__forceinline static int pop_count(unsigned __int64 x) {
-	return (int)_mm_popcnt_u64(x);
-}
+#if defined(_MSC_VER)
+#include <bit>
+#endif
 
-__forceinline int lsb(unsigned __int64 x)
+inline int pop_count(const uint64_t b)
 {
-	register unsigned long y;
-	_BitScanForward64(&y, x);
-	return y;
+	return std::popcount(b);
 }
 
+inline int lsb(const uint64_t b)
+{
+	return std::countr_zero(b);
+}

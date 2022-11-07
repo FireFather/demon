@@ -2,12 +2,9 @@
 //demon check.h
 //
 
-#ifndef CHECK_H
-#define CHECK_H
+#pragma once
 
 //function headers
-int check( int side );
-int attack( int side, int sq );
-int check_mate( int side, int ply );
-
-#endif
+int check(int side);
+int attack(int side, int sq);
+int check_mate(int side, int ply);

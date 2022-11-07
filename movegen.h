@@ -2,13 +2,12 @@
 //demon movegen.h
 //
 
-#ifndef MOVEGEN_H
-#define MOVEGEN_H
+#pragma once
 
 //function headers
-int gen_all( unsigned int *move_list );
-int gen_moves( unsigned int *move_list );
-int gen_captures( unsigned int *move_list );
+int gen_all(unsigned int* move_list);
+int gen_moves(unsigned int* move_list);
+int gen_captures(unsigned int* move_list);
 
 void gen_white_pawn_moves();
 void gen_black_pawn_moves();
@@ -31,5 +30,3 @@ void gen_white_rook_queen_captures();
 void gen_black_rook_queen_captures();
 void gen_white_king_captures();
 void gen_black_king_captures();
-
-#endif

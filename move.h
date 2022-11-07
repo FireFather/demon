@@ -2,13 +2,12 @@
 //demon move.h
 //
 
-#ifndef MOVE_H
-#define MOVE_H
+#pragma once
 
 //function headers
-void make_move( unsigned int move, int ply );
-void un_make_move( unsigned int move, int ply );
-unsigned int next_move( int ply, int side );
+void make_move(unsigned int move, int ply);
+void un_make_move(unsigned int move, int ply);
+unsigned int next_move(int ply, int side);
 
 //extern
 extern int promote;
@@ -22,5 +21,3 @@ extern bool White_KR_has_moved;
 extern bool White_QR_has_moved;
 extern bool Black_KR_has_moved;
 extern bool Black_QR_has_moved;
-
-#endif

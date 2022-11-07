@@ -2,10 +2,7 @@
 //demon legal.h
 //
 
-#ifndef LEGAL_H
-#define LEGAL_H
+#pragma once
 
 //function headers
-int legal( unsigned int move );
-
-#endif
+int legal(unsigned int move);
