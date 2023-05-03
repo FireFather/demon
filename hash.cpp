@@ -2,14 +2,17 @@
 //demon hash.cpp
 //
 
+#include "hash.h"
+
 #include <cstdlib>
+#include <iostream>
+#include <ostream>
+#include <random>
 
 #include "bitboard.h"
 #include "define.h"
-#include "hash.h"
 #include "move.h"
 #include "protocol.h"
-#include "util.h"
 
 //vars
 int hash_entries;
@@ -31,25 +34,29 @@ void init_hash()
 	smart_hash = static_cast<hash_entry*>(malloc(size * sizeof(hash_entry) / 4));
 	basic_hash = static_cast<hash_entry*>(malloc(size * sizeof(hash_entry) / 4));
 
-	hash_entries = size / sizeof(hash_entry);
+	hash_entries = size / static_cast<int>(sizeof(hash_entry));
+
+	std::random_device rd;
+	std::mt19937_64 e2(rd());
+	std::uniform_int_distribution dist(std::llround(std::pow(2, 61)), std::llround(std::pow(2, 62)));
 
 	int q;
 
 	for (q = 0; q < 64; q++)
 		for (int t = 0; t < 12; t++)
-			hash_data[q][t] = get_random_64();
+			hash_data[q][t] = dist(e2);
 
 	for (q = 0; q < 64; q++)
 		ep_modifier[q] = 0;
 
 	for (q = H2; q <= A2; q++)
-		ep_modifier[q] = get_random_64();
+		ep_modifier[q] = dist(e2);
 
 	for (q = H5; q <= A5; q++)
-		ep_modifier[q] = get_random_64();
+		ep_modifier[q] = dist(e2);
 
 	for (q = 0; q < 4; q++)
-		castle_modifier[q] = get_random_64();
+		castle_modifier[q] = dist(e2);
 
 	for (q = 0; q < hash_entries; q++)
 	{
@@ -92,7 +99,7 @@ void clear_hash()
 	free_hash();
 }
 
-bitboard hash_board(const bit_board* brd)
+bitboard hash_board(const position* brd)
 {
 	bitboard hash_val = 0;
 
@@ -134,6 +141,8 @@ void set_hash(int score, const int ply, const int depth, const char tag, const u
 
 	case ABOVE_TRUE:
 		score = score > -NEAR_MATE ? score : -NEAR_MATE;
+		break;
+	default: ;
 	}
 	const bitboard key = BLACK_SIDE(side) ? board->key : ~board->key;
 
@@ -213,6 +222,8 @@ int get_hash(const int ply, const int depth, int* alpha, int* beta, const int si
 					*beta = smart_hash[hash_index].score;
 					return BELOW_TRUE;
 				}
+				break;
+			default: ;
 			}
 		}
 		while (false);
@@ -256,6 +267,8 @@ int get_hash(const int ply, const int depth, int* alpha, int* beta, const int si
 					*beta = basic_hash[hash_index].score;
 					return BELOW_TRUE;
 				}
+				break;
+			default:;
 			}
 		}
 		while (false);

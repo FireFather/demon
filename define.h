@@ -5,7 +5,7 @@
 #pragma once
 
 #define NAME "Demon"
-#define VERSION "1.2"
+#define VERSION "1.3"
 
 #ifdef _WIN64
 #define PLATFORM "x64"
@@ -29,115 +29,142 @@
 #define ONE_PLY 40
 
 //extensions
-#define CHECK_EXT 40
-#define NULL_EXT 30
-#define PAWN_PUSH 40
-#define RECAP_EXT 30
+enum
+{
+	CHECK_EXT = 40,
+	NULL_EXT = 30,
+	PAWN_PUSH = 40,
+	RECAP_EXT = 30
+};
 
-#define HISTORY_SCANS 3
+enum
+{
+	HISTORY_SCANS = 3
+};
 
-#define MAX_DEPTH 128
-#define MAX_ITERATION 64
-#define MAX_MOVES 256
-#define MAX_STRING 512
-#define MAX_GAME 1024
+enum
+{
+	MAX_DEPTH = 128,
+	MAX_ITERATION = 64,
+	MAX_MOVES = 256,
+	MAX_STRING = 512,
+	MAX_GAME = 1024
+};
 
 //hash defines
-#define NIX 0
-#define BELOW_TRUE 1
-#define ABOVE_TRUE 2
-#define EQUAL_TRUE 3
-#define NULL_FAILS 4
+enum
+{
+	NIX = 0,
+	BELOW_TRUE = 1,
+	ABOVE_TRUE = 2,
+	EQUAL_TRUE = 3,
+	NULL_FAILS = 4
+};
 
 //search defines
-#define MATE 30000
-#define NEAR_MATE 29000
-#define LIMIT 31000
-#define MAX 32000
+enum
+{
+	MATE = 30000,
+	NEAR_MATE = 29000,
+	LIMIT = 31000,
+	MAX = 32000
+};
 
-#define WHITE 0
-#define BLACK 1
+enum
+{
+	WHITE = 0,
+	BLACK = 1
+};
 
-#define EMPTY 0
-#define BLACK_ROOK 1
-#define BLACK_BISHOP 2
-#define BLACK_QUEEN 3
-#define BLACK_KNIGHT 4
-#define BLACK_PAWN 5
-#define BLACK_KING 6
+enum
+{
+	EMPTY = 0,
+	BLACK_ROOK = 1,
+	BLACK_BISHOP = 2,
+	BLACK_QUEEN = 3,
+	BLACK_KNIGHT = 4,
+	BLACK_PAWN = 5,
+	BLACK_KING = 6
+};
 
-#define WHITE_ROOK 9
-#define WHITE_BISHOP 10
-#define WHITE_QUEEN 11
-#define WHITE_KNIGHT 12
-#define WHITE_PAWN 13
-#define WHITE_KING 14
+enum
+{
+	WHITE_ROOK = 9,
+	WHITE_BISHOP = 10,
+	WHITE_QUEEN = 11,
+	WHITE_KNIGHT = 12,
+	WHITE_PAWN = 13,
+	WHITE_KING = 14
+};
 
 //square defines
-#define H1 0
-#define G1 1
-#define F1 2
-#define E1 3
-#define D1 4
-#define C1 5
-#define B1 6
-#define A1 7
-#define H2 8
-#define G2 9
-#define F2 10
-#define E2 11
-#define D2 12
-#define C2 13
-#define B2 14
-#define A2 15
-#define H3 16
-#define G3 17
-#define F3 18
-#define E3 19
-#define D3 20
-#define C3 21
-#define B3 22
-#define A3 23
-#define H4 24
-#define G4 25
-#define F4 26
-#define E4 27
-#define D4 28
-#define C4 29
-#define B4 30
-#define A4 31
-#define H5 32
-#define G5 33
-#define F5 34
-#define E5 35
-#define D5 36
-#define C5 37
-#define B5 38
-#define A5 39
-#define H6 40
-#define G6 41
-#define F6 42
-#define E6 43
-#define D6 44
-#define C6 45
-#define B6 46
-#define A6 47
-#define H7 48
-#define G7 49
-#define F7 50
-#define E7 51
-#define D7 52
-#define C7 53
-#define B7 54
-#define A7 55
-#define H8 56
-#define G8 57
-#define F8 58
-#define E8 59
-#define D8 60
-#define C8 61
-#define B8 62
-#define A8 63
+enum
+{
+	H1 = 0,
+	G1 = 1,
+	F1 = 2,
+	E1 = 3,
+	D1 = 4,
+	C1 = 5,
+	B1 = 6,
+	A1 = 7,
+	H2 = 8,
+	G2 = 9,
+	F2 = 10,
+	E2 = 11,
+	D2 = 12,
+	C2 = 13,
+	B2 = 14,
+	A2 = 15,
+	H3 = 16,
+	G3 = 17,
+	F3 = 18,
+	E3 = 19,
+	D3 = 20,
+	C3 = 21,
+	B3 = 22,
+	A3 = 23,
+	H4 = 24,
+	G4 = 25,
+	F4 = 26,
+	E4 = 27,
+	D4 = 28,
+	C4 = 29,
+	B4 = 30,
+	A4 = 31,
+	H5 = 32,
+	G5 = 33,
+	F5 = 34,
+	E5 = 35,
+	D5 = 36,
+	C5 = 37,
+	B5 = 38,
+	A5 = 39,
+	H6 = 40,
+	G6 = 41,
+	F6 = 42,
+	E6 = 43,
+	D6 = 44,
+	C6 = 45,
+	B6 = 46,
+	A6 = 47,
+	H7 = 48,
+	G7 = 49,
+	F7 = 50,
+	E7 = 51,
+	D7 = 52,
+	C7 = 53,
+	B7 = 54,
+	A7 = 55,
+	H8 = 56,
+	G8 = 57,
+	F8 = 58,
+	E8 = 59,
+	D8 = 60,
+	C8 = 61,
+	B8 = 62,
+	A8 = 63
+};
 
 //macros
 #define FROM(m) ((m)&63)
@@ -152,9 +179,6 @@
 
 #define SWITCH_TURN(t) ((t)^1)
 #define CHANGE_SIDE(s) (-(s))
-
-#define WHITE 0
-#define BLACK 1
 
 #define BLACK_SIDE(s) ((s)>0)
 #define WHITE_SIDE(s) ((s)<0)

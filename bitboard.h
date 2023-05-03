@@ -8,9 +8,9 @@
 
 using bitboard = uint64_t;
 
-using bit_board = struct
+using position = struct
 {
-	char ep;
+	int ep;
 	int turn;
 	int score;
 	char castle;
@@ -39,7 +39,7 @@ using bit_board = struct
 extern bitboard file[8];
 extern bitboard rank[8];
 extern bitboard mask[64];
-extern bit_board* board;
+extern position* board;
 extern bitboard zero_left;
 extern bitboard zero_right;
 extern bitboard not_mask[64];
@@ -62,7 +62,7 @@ extern bitboard rank_block_mask[8][8];
 extern char ls_bits[65536];
 extern unsigned int horiz_shift[64];
 extern unsigned int vert_shift[64];
-extern char distance[64][64];
+extern int distance[64][64];
 
 extern int white_pawn_shift_left_12;
 extern int black_pawn_shift_left_12;

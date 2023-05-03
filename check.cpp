@@ -2,9 +2,9 @@
 //demon check.cpp
 //
 
-#include "define.h"
-#include "bitops.h"
 #include "bitboard.h"
+#include "bitops.h"
+#include "define.h"
 #include "move.h"
 #include "movegen.h"
 
@@ -64,7 +64,7 @@ int check_mate(const int side, const int ply)
 	{
 		const auto move_list = static_cast<unsigned int*>(malloc(MAX_MOVES * sizeof(unsigned int)));
 		const int num = gen_all(move_list);
-		unsigned int* temp = move_list;
+		const unsigned int* temp = move_list;
 
 		for (int i = 0; i < num; i++)
 		{
@@ -84,7 +84,7 @@ int check_mate(const int side, const int ply)
 	}
 	const auto move_list = static_cast<unsigned int*>(malloc(MAX_MOVES * sizeof(unsigned int)));
 	const int num = gen_all(move_list);
-	unsigned int* temp = move_list;
+	const unsigned int* temp = move_list;
 
 	for (int i = 0; i < num; i++)
 	{

@@ -8,8 +8,8 @@
 #include <cstring>
 #include <cstring>
 
-#include "bitops.h"
 #include "bitboard.h"
+#include "bitops.h"
 #include "define.h"
 #include "draw.h"
 #include "init.h"
@@ -72,7 +72,7 @@ int str_to_move(const char* str)
 	return 0;
 }
 
-char* to_long_algebraic(bit_board* b, const unsigned int m)
+char* to_long_algebraic(position* b, const unsigned int m)
 {
 	const auto coord_move = static_cast<char*>(malloc(6));
 
@@ -81,7 +81,7 @@ char* to_long_algebraic(bit_board* b, const unsigned int m)
 	return coord_move;
 }
 
-char* to_short_algebraic(const bit_board* b, const unsigned int m)
+char* to_short_algebraic(const position* b, const unsigned int m)
 {
 	const auto alg = static_cast<char*>(malloc(7));
 	int at = 1;
@@ -244,6 +244,7 @@ char* to_short_algebraic(const bit_board* b, const unsigned int m)
 			alg[0] = 'K';
 			break;
 		}
+	default: ;
 	}
 
 	if (CAPTURED(m) == 0)
@@ -313,14 +314,14 @@ void parse_position(char string[])
 
 void get(char str[], const int n)
 {
-	char c;
+	int c;
 	int i = 0;
 
 	while ((c = getchar()) != '\n')
 	{
 		if (i < n)
 		{
-			str[i++] = c;
+			str[i++] = static_cast<char>(c);
 		}
 	}
 	str[i] = '\0';

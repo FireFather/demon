@@ -1,16 +1,14 @@
 #include <iostream>
 
-#include "strings.h"
-
-using namespace std;
-
+#include "perft.h"
 #include "bitboard.h"
 #include "define.h"
 #include "move.h"
 #include "movegen.h"
 #include "protocol.h"
-#include <cstring>
-#include "perft.h"
+#include "strings.h"
+
+using namespace std;
 
 bitboard perft_nodes = 0;
 

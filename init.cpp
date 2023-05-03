@@ -3,30 +3,23 @@
 //
 #include <cstdlib>
 
+#include "init.h"
 #include "bitboard.h"
 #include "define.h"
 #include "hash.h"
-#include "init.h"
 #include "options.h"
-#include "protocol.h"
 #include "search.h"
 
 void init()
 {
 	int i, j;
-	board = static_cast<bit_board*>(malloc(sizeof(bit_board)));
+	board = static_cast<position*>(malloc(sizeof(position)));
 
 	set_start_position();
 	init_bitboards();
 	init_options();
 	get_options();
 	init_hash();
-
-	//board->turn = 0;
-	//board->score = 0;
-	//board->ep = 0;
-	//board->key = hash_board(board);
-	srand(time(nullptr));
 
 	for (i = 0; i < 50; i++)
 		for (j = 0; j < 50; j++)
@@ -382,6 +375,7 @@ void init_bitboards()
 			board->black_king = i;
 			board->black_pieces |= mask[i];
 			break;
+		default: ;
 		}
 	}
 
@@ -516,5 +510,4 @@ void set_start_position()
 	board->score = 0;
 	board->ep = 0;
 	board->key = hash_board(board);
-	srand(time(nullptr));
 }

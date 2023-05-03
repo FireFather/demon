@@ -2,10 +2,10 @@
 //demon eval.cpp
 //
 
-#include "bitops.h"
-#include "bitboard.h"
-#include "define.h"
 #include "eval.h"
+#include "bitboard.h"
+#include "bitops.h"
+#include "define.h"
 #include "move.h"
 #include "options.h"
 #include "protocol.h"
@@ -54,7 +54,7 @@ int tbp = 0;
 int eval(const int side, const int alpha, const int beta)
 {
 	int sq;
-	int file;
+	int ofile;
 	int result;
 	int score[2]{};
 
@@ -88,67 +88,67 @@ int eval(const int side, const int alpha, const int beta)
 
 	for (sq = 0; sq < 10; ++sq)
 	{
-		pawn_rank[WHITE][sq] = 0;
-		pawn_rank[BLACK][sq] = 7;
+		pawn_rank[white][sq] = 0;
+		pawn_rank[black][sq] = 7;
 	}
 
-	piece_mat[WHITE] = 0;
-	piece_mat[BLACK] = 0;
-	pawn_mat[WHITE] = 0;
-	pawn_mat[BLACK] = 0;
+	piece_mat[white] = 0;
+	piece_mat[black] = 0;
+	pawn_mat[white] = 0;
+	pawn_mat[black] = 0;
 
 	for (sq = 0; sq < 64; sq++)
 		switch (board->square[sq])
 		{
 		case WHITE_PAWN:
-			pawn_mat[WHITE] += pawn_value;
-			file = FILE(sq) + 1;
+			pawn_mat[white] += pawn_value;
+			ofile = FILE(sq) + 1;
 
-			if (RANK(sq) < pawn_rank[WHITE][file])
-				pawn_rank[WHITE][file] = RANK(sq);
+			if (RANK(sq) < pawn_rank[white][ofile])
+				pawn_rank[white][ofile] = RANK(sq);
 			break;
 
 		case WHITE_KNIGHT:
-			piece_mat[WHITE] += knight_value;
+			piece_mat[white] += knight_value;
 			break;
 
 		case WHITE_BISHOP:
-			piece_mat[WHITE] += bishop_value;
+			piece_mat[white] += bishop_value;
 			break;
 
 		case WHITE_ROOK:
-			piece_mat[WHITE] += rook_value;
+			piece_mat[white] += rook_value;
 			break;
 
 		case WHITE_QUEEN:
-			piece_mat[WHITE] += queen_value;
+			piece_mat[white] += queen_value;
 			break;
 
 		case WHITE_KING:
 			break;
 
 		case BLACK_PAWN:
-			pawn_mat[BLACK] += pawn_value;
-			file = FILE(sq) + 1;
+			pawn_mat[black] += pawn_value;
+			ofile = FILE(sq) + 1;
 
-			if (RANK(sq) > pawn_rank[BLACK][file])
-				pawn_rank[BLACK][file] = RANK(sq);
+			if (RANK(sq) > pawn_rank[black][ofile])
+				pawn_rank[black][ofile] = RANK(sq);
 			break;
 
 		case BLACK_KNIGHT:
-			piece_mat[BLACK] += knight_value;
+			piece_mat[black] += knight_value;
 			break;
 
 		case BLACK_BISHOP:
-			piece_mat[BLACK] += bishop_value;
+			piece_mat[black] += bishop_value;
 			break;
 
 		case BLACK_ROOK:
-			piece_mat[BLACK] += rook_value;
+			piece_mat[black] += rook_value;
 			break;
 
 		case BLACK_QUEEN:
-			piece_mat[BLACK] += queen_value;
+			piece_mat[black] += queen_value;
 			break;
 
 		case BLACK_KING:
@@ -156,10 +156,10 @@ int eval(const int side, const int alpha, const int beta)
 		default: ;
 		}
 
-	score[WHITE] = piece_mat[WHITE] + pawn_mat[WHITE];
-	score[BLACK] = piece_mat[BLACK] + pawn_mat[BLACK];
+	score[white] = piece_mat[white] + pawn_mat[white];
+	score[black] = piece_mat[black] + pawn_mat[black];
 
-	if (pawn_mat[WHITE] == 0 && pawn_mat[BLACK] == 0)
+	if (pawn_mat[white] == 0 && pawn_mat[black] == 0)
 	{
 		if (is_draw() == 1)
 			return 0;
@@ -169,140 +169,140 @@ int eval(const int side, const int alpha, const int beta)
 		switch (board->square[sq])
 		{
 		case WHITE_PAWN:
-			score[WHITE] += pawn_psq[sq];
-			score[WHITE] += white_pawn(sq);
+			score[white] += pawn_psq[sq];
+			score[white] += white_pawn(sq);
 
 			if (board->square[sq] == D2 && board->square[D3] != EMPTY
 				|| board->square[sq] == E2 && board->square[E3] != EMPTY)
-				score[WHITE] -= bcp_penalty;
+				score[white] -= bcp_penalty;
 			break;
 
 		case WHITE_KNIGHT:
-			score[WHITE] += knight_mobility(sq);
-			score[WHITE] += knight_psq[sq];
-			score[WHITE] -= distance[sq][board->black_king];
+			score[white] += knight_mobility(sq);
+			score[white] += knight_psq[sq];
+			score[white] -= distance[sq][board->black_king];
 			break;
 
 		case WHITE_BISHOP:
-			score[WHITE] += bishop_mobility(sq);
-			score[WHITE] += bishop_psq[sq];
-			score[WHITE] -= distance[sq][board->black_king];
+			score[white] += bishop_mobility(sq);
+			score[white] += bishop_psq[sq];
+			score[white] -= distance[sq][board->black_king];
 			break;
 
 		case WHITE_ROOK:
-			score[WHITE] += rook_mobility(sq);
-			score[WHITE] += rook_psq[sq];
-			score[WHITE] -= distance[sq][board->black_king];
+			score[white] += rook_mobility(sq);
+			score[white] += rook_psq[sq];
+			score[white] -= distance[sq][board->black_king];
 
-			if (pawn_rank[WHITE][FILE(sq) + 1] == 0)
+			if (pawn_rank[white][FILE(sq) + 1] == 0)
 			{
-				if (pawn_rank[BLACK][FILE(sq) + 1] == 7)
-					score[WHITE] += rof_bonus;
+				if (pawn_rank[black][FILE(sq) + 1] == 7)
+					score[white] += rof_bonus;
 				else
-					score[WHITE] += rsof_bonus;
+					score[white] += rsof_bonus;
 			}
 
 			if (RANK(sq) == 6)
-				score[WHITE] += ro7r_bonus;
+				score[white] += ro7r_bonus;
 			break;
 
 		case WHITE_QUEEN:
-			score[WHITE] += queen_mobility(sq);
-			score[WHITE] -= distance[sq][board->black_king];
+			score[white] += queen_mobility(sq);
+			score[white] -= distance[sq][board->black_king];
 
 			if (board->square[sq] != D1 && move_number < 16)
-				score[WHITE] -= eqm_penalty * move_number;
+				score[white] -= eqm_penalty * move_number;
 			break;
 
 		case WHITE_KING:
-			score[WHITE] += white_king(sq);
+			score[white] += white_king(sq);
 
-			if (piece_mat[BLACK] <= total_value / 2 / 3)
-				score[WHITE] += king_endgame_psq[sq];
+			if (piece_mat[black] <= total_value / 2 / 3)
+				score[white] += king_endgame_psq[sq];
 			else
 			{
-				score[WHITE] += king_psq[sq];
+				score[white] += king_psq[sq];
 			}
 			break;
 
 		case BLACK_PAWN:
-			score[BLACK] += pawn_psq[flip[sq]];
-			score[BLACK] += black_pawn(sq);
+			score[black] += pawn_psq[flip[sq]];
+			score[black] += black_pawn(sq);
 
 			if (board->square[sq] == D7 && board->square[D6] != EMPTY
 				|| board->square[sq] == E7 && board->square[E6] != EMPTY)
-				score[BLACK] -= bcp_penalty;
+				score[black] -= bcp_penalty;
 			break;
 
 		case BLACK_KNIGHT:
-			score[BLACK] += knight_mobility(sq);
-			score[BLACK] += knight_psq[flip[sq]];
-			score[BLACK] -= distance[sq][board->white_king];
+			score[black] += knight_mobility(sq);
+			score[black] += knight_psq[flip[sq]];
+			score[black] -= distance[sq][board->white_king];
 			break;
 
 		case BLACK_BISHOP:
-			score[BLACK] += bishop_mobility(sq);
-			score[BLACK] += bishop_psq[flip[sq]];
-			score[BLACK] -= distance[sq][board->white_king];
+			score[black] += bishop_mobility(sq);
+			score[black] += bishop_psq[flip[sq]];
+			score[black] -= distance[sq][board->white_king];
 			break;
 
 		case BLACK_ROOK:
-			score[BLACK] += rook_mobility(sq);
-			score[BLACK] += rook_psq[flip[sq]];
-			score[BLACK] -= distance[sq][board->white_king];
+			score[black] += rook_mobility(sq);
+			score[black] += rook_psq[flip[sq]];
+			score[black] -= distance[sq][board->white_king];
 
-			if (pawn_rank[BLACK][FILE(sq) + 1] == 7)
+			if (pawn_rank[black][FILE(sq) + 1] == 7)
 			{
-				if (pawn_rank[WHITE][FILE(sq) + 1] == 0)
-					score[BLACK] += rof_bonus;
+				if (pawn_rank[white][FILE(sq) + 1] == 0)
+					score[black] += rof_bonus;
 				else
-					score[BLACK] += rsof_bonus;
+					score[black] += rsof_bonus;
 			}
 
 			if (RANK(sq) == 1)
-				score[BLACK] += ro7r_bonus;
+				score[black] += ro7r_bonus;
 			break;
 
 		case BLACK_QUEEN:
-			score[BLACK] += queen_mobility(sq);
-			score[BLACK] -= distance[sq][board->white_king];
+			score[black] += queen_mobility(sq);
+			score[black] -= distance[sq][board->white_king];
 
 			if (board->square[sq] != D8 && move_number < 16)
-				score[BLACK] -= eqm_penalty * move_number;
+				score[black] -= eqm_penalty * move_number;
 			break;
 
 		case BLACK_KING:
-			score[BLACK] += black_king(sq);
+			score[black] += black_king(sq);
 
-			if (piece_mat[WHITE] <= total_value / 2 / 3)
-				score[BLACK] += king_endgame_psq[flip[sq]];
+			if (piece_mat[white] <= total_value / 2 / 3)
+				score[black] += king_endgame_psq[flip[sq]];
 			else
 			{
-				score[BLACK] += king_psq[flip[sq]];
+				score[black] += king_psq[flip[sq]];
 			}
 			break;
 		default: ;
 		}
 
 	if (wb >= 2)
-		score[WHITE] += bp_bonus;
+		score[white] += bp_bonus;
 
 	if (bb >= 2)
-		score[BLACK] += bp_bonus;
+		score[black] += bp_bonus;
 
 	if (white_has_castled)
-		score[WHITE] += cas_bonus;
+		score[white] += cas_bonus;
 
 	if (black_has_castled)
-		score[BLACK] += cas_bonus;
+		score[black] += cas_bonus;
 
-	score[WHITE] -= w_dev_penalty();
-	score[BLACK] -= b_dev_penalty();
+	score[white] -= w_dev_penalty();
+	score[black] -= b_dev_penalty();
 
 	if (side == -1)
-		result = score[WHITE] - score[BLACK];
+		result = score[white] - score[black];
 	else
-		result = score[BLACK] - score[WHITE];
+		result = score[black] - score[white];
 
 	return result;
 }
@@ -310,19 +310,19 @@ int eval(const int side, const int alpha, const int beta)
 int white_pawn(const int sq)
 {
 	int score = 0;
-	const int file = FILE(sq) + 1;
+	const int ofile = FILE(sq) + 1;
 
-	if (RANK(sq) < pawn_rank[WHITE][file])
+	if (RANK(sq) < pawn_rank[white][ofile])
 		score -= dp_penalty;
 
-	if (pawn_rank[WHITE][file - 1] == 0 && pawn_rank[WHITE][file + 1] == 0)
+	if (pawn_rank[white][ofile - 1] == 0 && pawn_rank[white][ofile + 1] == 0)
 		score -= ip_penalty;
 
-	else if (RANK(sq) < pawn_rank[WHITE][file - 1] && RANK(sq) < pawn_rank[WHITE][file + 1])
+	else if (RANK(sq) < pawn_rank[white][ofile - 1] && RANK(sq) < pawn_rank[white][ofile + 1])
 		score -= bp_penalty;
 
-	if (RANK(sq) >= pawn_rank[BLACK][file - 1] && RANK(sq) >= pawn_rank[BLACK][file]
-		&& RANK(sq) >= pawn_rank[BLACK][file + 1])
+	if (RANK(sq) >= pawn_rank[black][ofile - 1] && RANK(sq) >= pawn_rank[black][ofile]
+		&& RANK(sq) >= pawn_rank[black][ofile + 1])
 		score += pp_bonus * RANK(sq);
 
 	return score;
@@ -331,19 +331,19 @@ int white_pawn(const int sq)
 int black_pawn(const int sq)
 {
 	int score = 0;
-	const int file = FILE(sq) + 1;
+	const int ofile = FILE(sq) + 1;
 
-	if (RANK(sq) > pawn_rank[BLACK][file])
+	if (RANK(sq) > pawn_rank[black][ofile])
 		score -= dp_penalty;
 
-	if (pawn_rank[BLACK][file - 1] == 7 && pawn_rank[BLACK][file + 1] == 7)
+	if (pawn_rank[black][ofile - 1] == 7 && pawn_rank[black][ofile + 1] == 7)
 		score -= ip_penalty;
 
-	else if (RANK(sq) > pawn_rank[BLACK][file - 1] && RANK(sq) > pawn_rank[BLACK][file + 1])
+	else if (RANK(sq) > pawn_rank[black][ofile - 1] && RANK(sq) > pawn_rank[black][ofile + 1])
 		score -= bp_penalty;
 
-	if (RANK(sq) <= pawn_rank[WHITE][file - 1] && RANK(sq) <= pawn_rank[WHITE][file]
-		&& RANK(sq) <= pawn_rank[WHITE][file + 1])
+	if (RANK(sq) <= pawn_rank[white][ofile - 1] && RANK(sq) <= pawn_rank[white][ofile]
+		&& RANK(sq) <= pawn_rank[white][ofile + 1])
 		score += pp_bonus * (7 - RANK(sq));
 
 	return score;
@@ -368,10 +368,10 @@ int white_king(const int sq)
 	else
 	{
 		for (int i = FILE(sq); i <= FILE(sq) + 2; ++i)
-			if (pawn_rank[WHITE][i] == 0 && pawn_rank[BLACK][i] == 7)
+			if (pawn_rank[white][i] == 0 && pawn_rank[black][i] == 7)
 				score -= kof_penalty;
 	}
-	score *= piece_mat[BLACK];
+	score *= piece_mat[black];
 	score /= 3200;
 
 	return score;
@@ -396,64 +396,65 @@ int black_king(const int sq)
 	else
 	{
 		for (int i = FILE(sq); i <= FILE(sq) + 2; ++i)
-			if (pawn_rank[WHITE][i] == 0 && pawn_rank[BLACK][i] == 7)
+			if (pawn_rank[white][i] == 0 && pawn_rank[black][i] == 7)
 				score -= kof_penalty;
 	}
-	score *= piece_mat[WHITE];
+	score *= piece_mat[white];
 	score /= 3200;
 
 	return score;
 }
 
-int white_pawn_shield(int file)
+int white_pawn_shield(const int occfile)
 {
 	int score = 0;
 
-	if (pawn_rank[WHITE][file] == 1);
-
-	else if (pawn_rank[WHITE][file] == 2)
+	if (pawn_rank[white][occfile] == 1)
+		{}
+	else if (pawn_rank[white][occfile] == 2)
 		score -= 10;
 
-	else if (pawn_rank[WHITE][file] != 0)
+	else if (pawn_rank[white][occfile] != 0)
 		score -= 20;
 
 	else
 		score -= 25;
 
-	if (pawn_rank[BLACK][file] == 7)
+	if (pawn_rank[black][occfile] == 7)
 		score -= 15;
 
-	else if (pawn_rank[BLACK][file] == 2)
+	else if (pawn_rank[black][occfile] == 2)
 		score -= 10;
 
-	else if (pawn_rank[BLACK][file] == 3)
+	else if (pawn_rank[black][occfile] == 3)
 		score -= 5;
 
 	return score;
 }
 
-int black_pawn_shield(int file)
+int black_pawn_shield(const int ofile)
 {
 	int score = 0;
 
-	if (pawn_rank[BLACK][file] == 6);
+	if (pawn_rank[black][ofile] == 6)
+		{}
 
-	else if (pawn_rank[BLACK][file] == 5)
+	else if (pawn_rank[black][ofile] == 5)
 		score -= 10;
 
-	else if (pawn_rank[BLACK][file] != 7)
+	else if (pawn_rank[black][ofile] != 7)
 		score -= 20;
 
 	else
 		score -= 25;
 
-	if (pawn_rank[WHITE][file] == 0)
+	if (pawn_rank[white][ofile] == 0)
 		score -= 15;
 
-	else if (pawn_rank[WHITE][file] == 5)
+	else if (pawn_rank[white][ofile] == 5)
 		score -= 10;
 
-	else if (pawn_rank[WHITE][file] == 4)
+	else if (pawn_rank[white][ofile] == 4)
 		score -= 5;
 
 	return score;
@@ -922,28 +923,28 @@ int is_draw()
 	}
 	else if (wq && !wr && !wb && !wn && !bq && !bb)
 	{
-		if (br = true && bn == 2)
+		if (br == 1 && bn == 2)
 		{
 			return 1;
 		}
 	}
 	else if (bq && !br && !bb && !bn && !wq && !wb)
 	{
-		if (wr = true && wn == 2)
+		if (wr == 1 && wn == 2)
 		{
 			return 1;
 		}
 	}
 	else if (wq && !wr && !wb && !wn && !bq && !bn)
 	{
-		if (br = true && bb == 2)
+		if (br == 1 && bb == 2)
 		{
 			return 1;
 		}
 	}
 	else if (bq && !br && !bb && !bn && !wq && !wn)
 	{
-		if (wr = true && wb == 2)
+		if (wr == 1 && wb == 2)
 		{
 			return 1;
 		}

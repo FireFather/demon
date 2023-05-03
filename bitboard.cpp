@@ -2,8 +2,8 @@
 //demon bitboard.cpp
 //
 
-#include "define.h"
 #include "bitboard.h"
+#include "define.h"
 
 //global bitboards
 bitboard file[8];
@@ -31,8 +31,8 @@ bitboard rank_block_mask[8][8];
 char ls_bits[65536];
 unsigned int horiz_shift[64];
 unsigned int vert_shift[64];
-bit_board* board;
-char distance[64][64];
+position* board;
+int distance[64][64];
 
 int white_pawn_shift_left_12 = WHITE_PAWN << 12;
 int black_pawn_shift_left_12 = BLACK_PAWN << 12;
@@ -41,6 +41,42 @@ int black_knight_shift_left_12 = BLACK_KNIGHT << 12;
 int white_king_shift_left_12 = WHITE_KING << 12;
 int black_king_shift_left_12 = BLACK_KING << 12;
 
+/*
+int pop_count( bitboard n )
+    {
+    int q = 0;
+
+    while (n)
+        {
+        q++;
+        n &= n - 1;
+        }
+    return q;
+    }
+
+int lsb( bitboard n )
+    {
+    int q = ls_bits[n & 0xffff];
+
+    if (q == 20)
+        {
+        q = ls_bits[(n >> 16) & 0xffff];
+
+        if (q == 20)
+            {
+            q = ls_bits[(n >> 32) & 0xffff];
+
+            if (q == 20)
+                {
+                return 48 + ls_bits[n >> 48];
+                }
+            return q + 32;
+            }
+        return q + 16;
+        }
+    return q;
+    }
+*/
 int normal[64] =
 {
 	H1, G1, F1, E1, D1, C1, B1, A1,

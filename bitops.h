@@ -7,12 +7,12 @@
 #include <bit>
 #endif
 
-inline int pop_count(const uint64_t b)
+inline int pop_count(const bitboard b)
 {
 	return std::popcount(b);
 }
 
-inline int lsb(const uint64_t b)
+inline int lsb(const bitboard b)
 {
 	return std::countr_zero(b);
 }

@@ -4,13 +4,14 @@
 
 #pragma once
 
+#include "bitboard.h"
 #include "define.h"
 
 using plyinfo = struct
 {
 	char in_check;
 	char last_ply_was_extended;
-	char ep;
+	int ep;
 	bitboard key;
 	char castle;
 	int score;

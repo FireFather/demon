@@ -20,7 +20,7 @@ using hash_entry = struct
 void init_hash();
 void free_hash();
 void clear_hash();
-bitboard hash_board(const bit_board* brd);
+bitboard hash_board(const position* brd);
 void set_hash(int score, int ply, int depth, char tag, unsigned int move, int side);
 int get_hash(int ply, int depth, int* alpha, int* beta, int side);
 unsigned int get_move(int side);

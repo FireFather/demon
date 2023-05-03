@@ -2,8 +2,8 @@
 //demon see.cpp
 //
 
-#include "bitops.h"
 #include "bitboard.h"
+#include "bitops.h"
 #include "define.h"
 #include "move.h"
 

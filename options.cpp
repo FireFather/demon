@@ -2,21 +2,16 @@
 //demon options.cpp
 //
 
+#include "options.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <windows.h>
 
-#include "options.h"
 #include "protocol.h"
 #include "util.h"
 
 bool use_log = false;
-
-int pawn_value = 100;
-int knight_value = 320;
-int bishop_value = 330;
-int rook_value = 500;
-int queen_value = 1000;
 
 int total_value = 16 * pawn_value + 4 * knight_value
 	+ 4 * bishop_value + 4 * rook_value

@@ -2,11 +2,14 @@
 //demon protocol.cpp
 //
 
+#include "protocol.h"
+
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+
 #include "bitboard.h"
 #include "define.h"
 #include "draw.h"
@@ -15,7 +18,6 @@
 #include "move.h"
 #include "options.h"
 #include "search.h"
-#include "protocol.h"
 #include "strings.h"
 #include "timeman.h"
 #include "util.h"
@@ -41,7 +43,6 @@ int process_input()
 	const auto input = static_cast<char*>(malloc(16384));
 	int d = 6;
 
-	srand(time(nullptr));
 	setbuf(stdout, nullptr);
 	setbuf(stdin, nullptr);
 	signal(SIGINT, SIG_IGN);
@@ -69,8 +70,7 @@ int process_input()
 
 		else if (string_starts(input, "perft"))
 		{
-			const char* token = strtok(input, " ");
-			if (token)
+			if (const char* token = nullptr; token == strtok(input, " "))
 			{
 				token = strtok(nullptr, " ");
 				if (token)
@@ -81,8 +81,7 @@ int process_input()
 
 		else if (string_starts(input, "divide"))
 		{
-			const char* token = strtok(input, " ");
-			if (token)
+			if (const char* token = nullptr; token == strtok(input, " "))
 			{
 				token = strtok(nullptr, " ");
 				if (token)
@@ -108,7 +107,7 @@ int process_input()
 					token = strtok(nullptr, " ");
 
 					if (token)
-						btime = atoi(token) / 1000;
+						btime = atoi(token) / static_cast<double>(1000);
 				}
 
 				else if (!strcmp(token, "wtime"))
@@ -116,7 +115,7 @@ int process_input()
 					token = strtok(nullptr, " ");
 
 					if (token)
-						wtime = atoi(token) / 1000;
+						wtime = atoi(token) / static_cast<double>(1000);
 				}
 
 				else if (!strcmp(token, "binc"))
@@ -124,7 +123,7 @@ int process_input()
 					token = strtok(nullptr, " ");
 
 					if (token)
-						binc = atoi(token) / 1000;
+						binc = atoi(token) / static_cast<double>(1000);
 				}
 
 				else if (!strcmp(token, "winc"))
@@ -132,7 +131,7 @@ int process_input()
 					token = strtok(nullptr, " ");
 
 					if (token)
-						winc = atoi(token) / 1000;
+						winc = atoi(token) / static_cast<double>(1000);
 				}
 
 				else if (!strcmp(token, "depth"))

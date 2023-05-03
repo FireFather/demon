@@ -2,28 +2,32 @@
 //demon search.cpp
 //
 
-#include <iostream>
-#include <cstring>
+#include "search.h"
 
-#include "bitops.h"
+#include <cstring>
+#include <iostream>
+
 #include "bitboard.h"
-#include "define.h"
+#include "bitops.h"
 #include "check.h"
+#include "define.h"
 #include "draw.h"
 #include "eval.h"
 #include "hash.h"
 #include "legal.h"
-#include "search.h"
-#include "sort.h"
 #include "move.h"
 #include "movegen.h"
 #include "options.h"
 #include "protocol.h"
 #include "pv.h"
 #include "see.h"
+#include "sort.h"
 #include "util.h"
 
-#define WINDOW 400
+enum
+{
+	WINDOW = 400
+};
 
 using namespace std;
 
@@ -45,8 +49,8 @@ unsigned int pv[MAX_DEPTH][MAX_DEPTH];
 void iterate(const int side, const int depth)
 {
 	int i;
-	int alpha = 0;
-	int beta = 0;
+	int alpha;
+	int beta;
 	int score = 0;
 	constexpr int start_depth = 1;
 	bitboard big_num = 1;
@@ -272,6 +276,8 @@ int search(const int ply, const int depth, const int side, int alpha, int beta, 
 
 	case NULL_FAILS:
 		null_fails = 1;
+		break;
+	default: ;
 	}
 
 	int value;
@@ -301,9 +307,8 @@ int search(const int ply, const int depth, const int side, int alpha, int beta, 
 			ply_info[ply].ep = board->ep;
 			board->ep = 0;
 			board->turn = SWITCH_TURN(board->turn);
-			const int r = NULL_REDUCTION(depth);
 
-			if (depth - r >= ONE_PLY)
+			if (const int r = NULL_REDUCTION(depth); depth - r >= ONE_PLY)
 			{
 				value = -search(ply + 1, depth - r, CHANGE_SIDE(side), -beta, 1 - beta, 0);
 
@@ -337,9 +342,8 @@ int search(const int ply, const int depth, const int side, int alpha, int beta, 
 
 	else if (depth <= 3 && eval(side, alpha, beta) < beta - 300)
 	{
-		const int value = -quiescient(ply + 1, CHANGE_SIDE(side), -beta, -alpha);
-		if (value < beta)
-			return value;
+		if (const int val = -quiescient(ply + 1, CHANGE_SIDE(side), -beta, -alpha); val < beta)
+			return val;
 	}
 
 	const int old_a = alpha;
@@ -390,7 +394,7 @@ int search(const int ply, const int depth, const int side, int alpha, int beta, 
 				if (null_threat)
 					ext += small_ext ? NULL_EXT >> 1 : NULL_EXT;
 
-				if ((ply_info[ply + 1].in_check = check(CHANGE_SIDE(side))))
+				if ((ply_info[ply + 1].in_check = static_cast<char>(check(CHANGE_SIDE(side)))))
 				{
 					ext += small_ext ? CHECK_EXT >> 1 : CHECK_EXT;
 				}
@@ -511,34 +515,34 @@ int root_search(const int side, const int depth, const unsigned int* move_list, 
 	pv_length[0] = 0;
 	int value;
 	ply_info[1].in_check = 0;
-	int curr_depth = 0;
+	int currdepth = 0;
 
-	while (curr_depth < num_moves)
+	while (currdepth < num_moves)
 	{
-		ply_info[0].move_played = move_list[curr_depth];
-		make_move(move_list[curr_depth], 0);
+		ply_info[0].move_played = move_list[currdepth];
+		make_move(move_list[currdepth], 0);
 		int ext = -ONE_PLY;
 
-		if ((ply_info[1].in_check = check(-side)))
+		if ((ply_info[1].in_check = static_cast<char>(check(-side))))
 		{
 			ext += CHECK_EXT;
 		}
 
-		if (PIECE(move_list[curr_depth]) == BLACK_PAWN && TO(move_list[curr_depth]) <= A2
-			|| PIECE(move_list[curr_depth]) == WHITE_PAWN && TO(move_list[curr_depth]) >= H7)
+		if (PIECE(move_list[currdepth]) == BLACK_PAWN && TO(move_list[currdepth]) <= A2
+			|| PIECE(move_list[currdepth]) == WHITE_PAWN && TO(move_list[currdepth]) >= H7)
 		{
 			ext += PAWN_PUSH;
 		}
 		ext = ext > 0 ? 0 : ext;
 		const int nodes_before = nodes;
 
-		if (!curr_depth)
+		if (!currdepth)
 		{
 			value = -search(1, depth + ext, CHANGE_SIDE(side), -beta, -alpha, 1);
 
 			if (value == MAX)
 			{
-				un_make_move(move_list[curr_depth], 0);
+				un_make_move(move_list[currdepth], 0);
 				return -MAX;
 			}
 		}
@@ -548,7 +552,7 @@ int root_search(const int side, const int depth, const unsigned int* move_list, 
 
 			if (value == MAX)
 			{
-				un_make_move(move_list[curr_depth], 0);
+				un_make_move(move_list[currdepth], 0);
 				return -MAX;
 			}
 
@@ -558,7 +562,7 @@ int root_search(const int side, const int depth, const unsigned int* move_list, 
 
 				if (value == MAX)
 				{
-					un_make_move(move_list[curr_depth], 0);
+					un_make_move(move_list[currdepth], 0);
 					return -MAX;
 				}
 			}
@@ -566,8 +570,8 @@ int root_search(const int side, const int depth, const unsigned int* move_list, 
 
 		if (value > alpha)
 		{
-			pv[0][0] = move_list[curr_depth];
-			best_move = move_list[curr_depth];
+			pv[0][0] = move_list[currdepth];
+			best_move = move_list[currdepth];
 
 			for (int i = 1; i < pv_length[1]; i++)
 				pv[0][i] = pv[1][i];
@@ -575,14 +579,14 @@ int root_search(const int side, const int depth, const unsigned int* move_list, 
 
 			if (value >= beta)
 			{
-				un_make_move(move_list[curr_depth], 0);
+				un_make_move(move_list[currdepth], 0);
 				return value;
 			}
 			alpha = value;
 		}
-		un_make_move(move_list[curr_depth], 0);
-		node_count[curr_depth] = nodes - nodes_before;
-		curr_depth++;
+		un_make_move(move_list[currdepth], 0);
+		node_count[currdepth] = nodes - nodes_before;
+		currdepth++;
 	}
 	set_hash(alpha, 0, depth, EQUAL_TRUE, pv[0][0], side);
 	return alpha;

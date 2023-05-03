@@ -2,9 +2,9 @@
 //demon legal.cpp
 //
 
-#include "define.h"
-#include "check.h"
 #include "bitboard.h"
+#include "check.h"
+#include "define.h"
 
 int legal(const unsigned int move)
 {
@@ -159,10 +159,12 @@ int legal(const unsigned int move)
 		case WHITE_QUEEN:
 			if ((board->white_pieces | board->black_pieces) & obstructed[from][to])
 				return 0;
-
+			break;
 		case BLACK_QUEEN:
 			if ((board->white_pieces | board->black_pieces) & obstructed[from][to])
 				return 0;
+			break;
+		default: ;
 		}
 
 		if (board->square[from] != piece || board->square[to] != captured || (captured & 7) == BLACK_KING)

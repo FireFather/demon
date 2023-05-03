@@ -2,20 +2,20 @@
 //demon movegen.cpp
 //
 
-#include "define.h"
-#include "bitops.h"
-#include "bitboard.h"
-#include "check.h"
-#include "move.h"
 #include "movegen.h"
+#include "bitboard.h"
+#include "bitops.h"
+#include "check.h"
+#include "define.h"
+#include "move.h"
 
 //vars
 bitboard from_map;
 bitboard to_map;
 bitboard all_pieces;
 bitboard not_all_pieces;
-char from_square;
-char to_square;
+int from_square;
+int to_square;
 unsigned int* ml;
 unsigned int hold;
 
@@ -51,7 +51,7 @@ int gen_all(unsigned int* move_list)
 		gen_black_rook_queen_captures();
 		gen_black_king_captures();
 	}
-	return ml - move_list;
+	return static_cast<int>(ml - move_list);
 }
 
 int gen_moves(unsigned int* move_list)
@@ -74,7 +74,7 @@ int gen_moves(unsigned int* move_list)
 		gen_black_rook_queen_moves();
 		gen_black_king_moves();
 	}
-	return ml - move_list;
+	return static_cast<int>(ml - move_list);
 }
 
 int gen_captures(unsigned int* move_list)
@@ -97,7 +97,7 @@ int gen_captures(unsigned int* move_list)
 		gen_black_rook_queen_captures();
 		gen_black_king_captures();
 	}
-	return ml - move_list;
+	return static_cast<int>(ml - move_list);
 }
 
 void gen_white_pawn_moves()

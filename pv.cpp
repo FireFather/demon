@@ -2,15 +2,15 @@
 //demon pv.cpp
 //
 
+#include "pv.h"
+
 #include "bitboard.h"
+#include "define.h"
 #include "hash.h"
 #include "legal.h"
-#include "search.h"
 #include "move.h"
 #include "protocol.h"
-#include "pv.h"
-#include <cstring>
-
+#include "search.h"
 #include "strings.h"
 #include "util.h"
 

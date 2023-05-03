@@ -132,6 +132,7 @@ void make_move(const unsigned int move, const int ply)
 					board->key ^= hash_data[to][piece_num[WHITE_QUEEN]];
 					board->square[to] = WHITE_QUEEN;
 					break;
+				default: ;
 				}
 				board->white_pawns &= not_mask[from];
 				board->key ^= hash_data[to][piece_num[WHITE_PAWN]];
@@ -203,6 +204,7 @@ void make_move(const unsigned int move, const int ply)
 			}
 			board->castle &= 3 + 48;
 			break;
+		default: ;
 		}
 
 		switch (captured)
@@ -262,6 +264,7 @@ void make_move(const unsigned int move, const int ply)
 			}
 			board->score -= pawn_value;
 			break;
+		default: ;
 		}
 	}
 	else
@@ -331,6 +334,7 @@ void make_move(const unsigned int move, const int ply)
 					board->key ^= hash_data[to][piece_num[BLACK_QUEEN]];
 					board->square[to] = BLACK_QUEEN;
 					break;
+				default: ;
 				}
 				board->black_pawns &= not_mask[from];
 				board->key ^= hash_data[to][piece_num[BLACK_PAWN]];
@@ -402,6 +406,7 @@ void make_move(const unsigned int move, const int ply)
 			}
 			board->castle &= 12 + 48;
 			break;
+		default: ;
 		}
 
 		switch (captured)
@@ -461,6 +466,7 @@ void make_move(const unsigned int move, const int ply)
 			}
 			board->score += pawn_value;
 			break;
+		default: ;
 		}
 	}
 	board->turn = SWITCH_TURN(board->turn);
@@ -473,7 +479,7 @@ void un_make_move(const unsigned int move, const int ply)
 	const int to = TO(move);
 	const int captured = CAPTURED(move);
 	const int special = SPECIAL(move);
-	const int promote = 4;
+	constexpr int promotion = 4;
 
 	board->key = ply_info[ply].key;
 	board->score = ply_info[ply].score;
@@ -525,7 +531,7 @@ void un_make_move(const unsigned int move, const int ply)
 		case WHITE_PAWN:
 			if (to >= H8)
 			{
-				switch (promote)
+				switch (promotion)
 				{
 				case 1:
 					board->white_knights &= not_mask[to];
@@ -542,6 +548,7 @@ void un_make_move(const unsigned int move, const int ply)
 				case 4:
 					board->white_queens &= not_mask[to];
 					break;
+				default: ;
 				}
 				board->white_pawns |= mask[from];
 			}
@@ -584,6 +591,7 @@ void un_make_move(const unsigned int move, const int ply)
 			}
 			board->white_king = from;
 			break;
+		default: ;
 		}
 
 		switch (captured)
@@ -629,6 +637,7 @@ void un_make_move(const unsigned int move, const int ply)
 				board->black_pawns |= mask[to];
 			}
 			break;
+		default: ;
 		}
 	}
 	else
@@ -663,7 +672,7 @@ void un_make_move(const unsigned int move, const int ply)
 		case BLACK_PAWN:
 			if (to <= A1)
 			{
-				switch (promote)
+				switch (promotion)
 				{
 				case 1:
 					board->black_knights &= not_mask[to];
@@ -680,6 +689,7 @@ void un_make_move(const unsigned int move, const int ply)
 				case 4:
 					board->black_queens &= not_mask[to];
 					break;
+				default: ;
 				}
 				board->black_pawns |= mask[from];
 			}
@@ -722,6 +732,7 @@ void un_make_move(const unsigned int move, const int ply)
 			}
 			board->black_king = from;
 			break;
+		default: ;
 		}
 
 		switch (captured)
@@ -767,6 +778,7 @@ void un_make_move(const unsigned int move, const int ply)
 				board->white_pawns |= mask[to];
 			}
 			break;
+		default: ;
 		}
 	}
 	board->turn = SWITCH_TURN(board->turn);
@@ -788,10 +800,10 @@ unsigned int next_move(const int ply, const int side)
 
 		if (ply_info[ply].hash_move)
 			return ply_info[ply].hash_move;
-
+		break;
 	case 1:
 		ply_info[ply].gen_stage = 2;
-		ply_info[ply].num = gen_captures(ply_info[ply].move_list);
+		ply_info[ply].num = static_cast<char>(gen_captures(ply_info[ply].move_list));
 
 		for (i = 0; i < ply_info[ply].num; i++)
 			if (ply_info[ply].move_list[i] == ply_info[ply].hash_move)
@@ -816,7 +828,7 @@ unsigned int next_move(const int ply, const int side)
 				sort[i] = sort[ply_info[ply].num];
 			}
 		}
-		spot = ply_info[ply].num;
+		spot = static_cast<unsigned char>(ply_info[ply].num);
 
 		while (true)
 		{
@@ -841,12 +853,12 @@ unsigned int next_move(const int ply, const int side)
 			sort[spot] = sort[h_index];
 			sort[h_index] = temp;
 		}
-
+		break;
 	case 2:
 		if (ply_info[ply].num)
 			return ply_info[ply].move_list[--ply_info[ply].num];
 		ply_info[ply].gen_stage = 3;
-
+		break;
 	case 3:
 		ply_info[ply].gen_stage = 4;
 
@@ -855,7 +867,7 @@ unsigned int next_move(const int ply, const int side)
 			ply_info[ply].killer_1 = killer[0][ply];
 			return killer[0][ply];
 		}
-
+		break;
 	case 4:
 		ply_info[ply].gen_stage = 5;
 
@@ -864,11 +876,11 @@ unsigned int next_move(const int ply, const int side)
 			ply_info[ply].killer_2 = killer[1][ply];
 			return killer[1][ply];
 		}
-
+		break;
 	case 5:
 		ply_info[ply].gen_stage = 6;
 		ply_info[ply].num_history = 0;
-		ply_info[ply].num = gen_moves(ply_info[ply].move_list);
+		ply_info[ply].num = static_cast<char>(gen_moves(ply_info[ply].move_list));
 
 		for (i = 0; i < ply_info[ply].num; i++)
 			if (ply_info[ply].move_list[i]
@@ -876,7 +888,7 @@ unsigned int next_move(const int ply, const int side)
 					|| ply_info[ply].move_list[i] == ply_info[ply].killer_1
 					|| ply_info[ply].move_list[i] == ply_info[ply].killer_2))
 				ply_info[ply].move_list[i] = 0;
-
+		break;
 	case 6:
 		ply_info[ply].num_history++;
 		high = -1;
@@ -908,18 +920,20 @@ unsigned int next_move(const int ply, const int side)
 		ret_move = ply_info[ply].move_list[h_index];
 		ply_info[ply].move_list[h_index] = 0;
 		return ret_move;
-
+		break;
 	case 7:
 		while (--ply_info[ply].num >= 0 && !ply_info[ply].move_list[ply_info[ply].num]);
 
 		if (ply_info[ply].num >= 0)
 			return ply_info[ply].move_list[ply_info[ply].num];
 		ply_info[ply].gen_stage = 8;
-
+		break;
 	case 8:
 		if (ply_info[ply].num_lose)
 			return ply_info[ply].lose_list[--ply_info[ply].num_lose];
 		ply_info[ply].gen_stage = 9;
+		break;
+	default: ;
 	}
 	return 0;
 }

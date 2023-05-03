@@ -10,11 +10,12 @@ void define_option(const char* name, const char* default_value, int type, int mi
 //extern
 extern bool use_log;
 
-extern int pawn_value;
-extern int knight_value;
-extern int bishop_value;
-extern int rook_value;
-extern int queen_value;
+inline int pawn_value = 100;
+inline int knight_value = 320;
+inline int bishop_value = 330;
+inline int rook_value = 500;
+inline int queen_value = 1000;
+
 extern int total_value;
 
 extern void init_options();

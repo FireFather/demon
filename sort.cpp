@@ -26,9 +26,9 @@ int sort_list(unsigned int* move_list, const int side, const int num)
 			spot++;
 		}
 
-	int high = 0;
+	int high;
 	int h_index = 0;
-	int sc = 0;
+	int sc;
 
 	while (true)
 	{
